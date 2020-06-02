@@ -4,6 +4,7 @@ import logging
 import math
 import datetime
 import sys
+from vardata import project_path
 
 _SHOW_IMAGE = False
 
@@ -343,7 +344,7 @@ def test_video(video_file):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    test_video('/home/pi/DeepPiCar/driver/data/tmp/video01')
-    #test_photo('/home/pi/DeepPiCar/driver/data/video/car_video_190427_110320_073.png')
+    test_video(project_path + '/driver/data/tmp/video01')
+    #test_photo(project_path + '/driver/data/video/car_video_190427_110320_073.png')
     #test_photo(sys.argv[1])
     #test_video(sys.argv[1])
