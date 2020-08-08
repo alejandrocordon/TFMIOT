@@ -19,7 +19,6 @@ from picar import front_wheels
 from picar import back_wheels
 import time
 import picar
-
 import paho.mqtt.client as mqtt
 import threading
 
@@ -322,9 +321,11 @@ def mainBLE():
     # -------------------------------------
 
     try:
+        '''
         pmqtt = threading.Thread(target=mainMQTT)
         pmqtt.setDaemon(True)
         pmqtt.start()
+        '''
 
         mainloop.run()
     except KeyboardInterrupt:
