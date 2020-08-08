@@ -141,7 +141,7 @@ def on_subscribe(client, obj, mid, granted_qos):
 def on_log(client, obj, level, string):
     print(string)
 
-
+'''
 mqttc = mqtt.Client()
 # Assign event callbacks
 mqttc.on_message = on_message
@@ -156,7 +156,7 @@ mqttc.connect('hairdresser.cloudmqtt.com', '18849')
 topic = 'masteriot'
 # Start subscribe, with QoS level 0
 mqttc.subscribe(topic, 0)
-
+'''
 
 class TxCharacteristic(Characteristic):
     def __init__(self, bus, index, service):
