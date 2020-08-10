@@ -69,10 +69,8 @@ def detect_edges(frame):
     # filter for blue lane lines
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     show_image("hsv", hsv)
-    #lower_blue = np.array([30, 40, 0])
-    #upper_blue = np.array([150, 255, 255])
-    lower_blue = np.array([0, 0, 153])
-    upper_blue = np.array([0, 0, 255])
+    lower_blue = np.array([60, 40, 40])
+    upper_blue = np.array([150, 255, 255])
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
     show_image("blue mask", mask)
 
@@ -81,18 +79,17 @@ def detect_edges(frame):
 
     return edges
 
+'''
 def detect_edges_old(frame):
     # filter for blue lane lines
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     show_image("hsv", hsv)
+
     for i in range(16):
-        #lower_blue = np.array([30, 16 * i, 0])
-        #upper_blue = np.array([150, 255, 255])
-        lower_blue = np.array([0, 0, 9*i])
-        upper_blue = np.array([0, 0, 255])
+        lower_blue = np.array([30, 16 * i, 0])
+        upper_blue = np.array([150, 255, 255])
         mask = cv2.inRange(hsv, lower_blue, upper_blue)
-        #show_image("blue mask Sat=%s" % (16* i), mask)
-        show_image("blue mask Sat=%s" % (9* i), mask)
+        show_image("blue mask Sat=%s" % (16* i), mask)
 
 
     #for i in range(16):
@@ -105,7 +102,7 @@ def detect_edges_old(frame):
     edges = cv2.Canny(mask, 200, 400)
 
     return edges
-
+'''
 
 def region_of_interest(canny):
     height, width = canny.shape
