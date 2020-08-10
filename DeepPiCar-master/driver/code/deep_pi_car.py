@@ -30,6 +30,7 @@ class DeepPiCar(object):
         self.pan_servo.offset = -30  # calibrate servo to center
         self.pan_servo.write(90)
 
+        
         self.tilt_servo = picar.Servo.Servo(2)
         self.tilt_servo.offset = 20  # calibrate servo to center
         self.tilt_servo.write(90)
@@ -115,7 +116,7 @@ class DeepPiCar(object):
         return image
 
     def follow_lane(self, image):
-        #image = self.lane_follower.follow_lane(image)
+        image = self.lane_follower.follow_lane(image)
         return image
 
 
