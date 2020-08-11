@@ -32,7 +32,9 @@ class HandCodedLaneFollower(object):
             return frame
 
         new_steering_angle = compute_steering_angle(frame, lane_lines)
-        self.curr_steering_angle = stabilize_steering_angle(self.curr_steering_angle, new_steering_angle, len(lane_lines))
+        self.curr_steering_angle = new_steering_angle
+        #TODO: cambia esto o suaviza mejor.
+        #self.curr_steering_angle = stabilize_steering_angle(self.curr_steering_angle, new_steering_angle, len(lane_lines))
 
         if self.car is not None:
             self.car.front_wheels.turn(self.curr_steering_angle)
@@ -69,8 +71,10 @@ def detect_edges(frame):
     # filter for blue lane lines
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     show_image("hsv", hsv)
-    lower_blue = np.array([60, 40, 40])
-    upper_blue = np.array([150, 255, 255])
+    #lower_blue = np.array([60, 40, 40])
+    #upper_blue = np.array([150, 255, 255])
+    lower_blue = np.array([0, 0, 80])
+    upper_blue = np.array([100, 100, 255])
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
     show_image("blue mask", mask)
 
@@ -79,17 +83,16 @@ def detect_edges(frame):
 
     return edges
 
-'''
-def detect_edges_old(frame):
-    # filter for blue lane lines
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    show_image("hsv", hsv)
+#def detect_edges_old(frame):
+    #    # filter for blue lane lines
+    #hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    #show_image("hsv", hsv)
 
-    for i in range(16):
-        lower_blue = np.array([30, 16 * i, 0])
-        upper_blue = np.array([150, 255, 255])
-        mask = cv2.inRange(hsv, lower_blue, upper_blue)
-        show_image("blue mask Sat=%s" % (16* i), mask)
+    #for i in range(16):
+    #    lower_blue = np.array([30, 16 * i, 0])
+    #    upper_blue = np.array([150, 255, 255])
+    #    mask = cv2.inRange(hsv, lower_blue, upper_blue)
+    #    show_image("blue mask Sat=%s" % (16* i), mask)
 
 
     #for i in range(16):
@@ -99,10 +102,9 @@ def detect_edges_old(frame):
        # show_image("blue mask hue=%s" % (16* i), mask)
 
         # detect edges
-    edges = cv2.Canny(mask, 200, 400)
+    #edges = cv2.Canny(mask, 200, 400)
 
-    return edges
-'''
+    #return edges
 
 def region_of_interest(canny):
     height, width = canny.shape
