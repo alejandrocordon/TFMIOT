@@ -5,6 +5,7 @@ import time
 import edgetpu.detection.engine
 from PIL import Image
 from traffic_objects import *
+from vardata import project_path
 
 _SHOW_IMAGE = False
 
@@ -18,8 +19,8 @@ class ObjectsOnRoadProcessor(object):
     def __init__(self,
                  car=None,
                  speed_limit=40,
-                 model='/home/pi/DeepPiCar/models/object_detection/data/model_result/road_signs_quantized_edgetpu.tflite',
-                 label='/home/pi/DeepPiCar/models/object_detection/data/model_result/road_sign_labels.txt',
+                 model=project_path + '/models/object_detection/data/model_result/road_signs_quantized_edgetpu.tflite',
+                 label=project_path + '/models/object_detection/data/model_result/road_sign_labels.txt',
                  width=640,
                  height=480):
         # model: This MUST be a tflite model that was specifically compiled for Edge TPU.
@@ -181,19 +182,19 @@ def test_photo(file):
 def test_stop_sign():
     # this simulates a car at stop sign
     object_processor = ObjectsOnRoadProcessor()
-    frame = cv2.imread('/home/pi/DeepPiCar/driver/data/objects/stop_sign.jpg')
+    frame = cv2.imread(project_path + '/driver/data/objects/stop_sign.jpg')
     combo_image = object_processor.process_objects_on_road(frame)
     show_image('Stop 1', combo_image)
     time.sleep(1)
-    frame = cv2.imread('/home/pi/DeepPiCar/driver/data/objects/stop_sign.jpg')
+    frame = cv2.imread(project_path + '/driver/data/objects/stop_sign.jpg')
     combo_image = object_processor.process_objects_on_road(frame)
     show_image('Stop 2', combo_image)
     time.sleep(2)
-    frame = cv2.imread('/home/pi/DeepPiCar/driver/data/objects/stop_sign.jpg')
+    frame = cv2.imread(project_path + '/driver/data/objects/stop_sign.jpg')
     combo_image = object_processor.process_objects_on_road(frame)
     show_image('Stop 3', combo_image)
     time.sleep(1)
-    frame = cv2.imread('/home/pi/DeepPiCar/driver/data/objects/green_light.jpg')
+    frame = cv2.imread(project_path + '/driver/data/objects/green_light.jpg')
     combo_image = object_processor.process_objects_on_road(frame)
     show_image('Stop 4', combo_image)
 
@@ -236,12 +237,12 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format='%(levelname)-5s:%(asctime)s: %(message)s')
 
     # These processors contains no state
-    test_photo('/home/pi/DeepPiCar/driver/data/objects/red_light.jpg')
-    test_photo('/home/pi/DeepPiCar/driver/data/objects/person.jpg')
-    test_photo('/home/pi/DeepPiCar/driver/data/objects/limit_40.jpg')
-    test_photo('/home/pi/DeepPiCar/driver/data/objects/limit_25.jpg')
-    test_photo('/home/pi/DeepPiCar/driver/data/objects/green_light.jpg')
-    test_photo('/home/pi/DeepPiCar/driver/data/objects/no_obj.jpg')
+    test_photo(project_path + '/driver/data/objects/red_light.jpg')
+    test_photo(project_path + '/driver/data/objects/person.jpg')
+    test_photo(project_path + '/driver/data/objects/limit_40.jpg')
+    test_photo(project_path + '/driver/data/objects/limit_25.jpg')
+    test_photo(project_path + '/driver/data/objects/green_light.jpg')
+    test_photo(project_path + '/driver/data/objects/no_obj.jpg')
 
     # test stop sign, which carries state
     test_stop_sign()

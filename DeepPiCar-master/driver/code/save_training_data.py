@@ -16,6 +16,8 @@ def save_image_and_steering_angle(video_file):
             i += 1
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+    except:
+        print('error')
     finally:
         cap.release()
         cv2.destroyAllWindows()

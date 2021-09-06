@@ -9,9 +9,11 @@ import datetime
 import edgetpu.detection.engine
 import cv2
 from PIL import Image
+from vardata import project_path
+
 
 def main():
-    os.chdir('/home/pi/DeepPiCar/models/object_detection')
+    os.chdir(project_path + '/models/object_detection')
     
     parser = argparse.ArgumentParser()
     parser.add_argument(

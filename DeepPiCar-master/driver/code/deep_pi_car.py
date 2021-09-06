@@ -11,8 +11,17 @@ _SHOW_IMAGE = True
 class DeepPiCar(object):
 
     __INITIAL_SPEED = 0
-    __SCREEN_WIDTH = 320
-    __SCREEN_HEIGHT = 240
+    #__SCREEN_WIDTH = 320
+    #__SCREEN_HEIGHT = 240
+
+    __SCREEN_WIDTH = 640
+    __SCREEN_HEIGHT = 480
+
+    #__SCREEN_WIDTH = 848
+    #__SCREEN_HEIGHT = 480
+
+    #__SCREEN_WIDTH = 1280
+    #__SCREEN_HEIGHT = 720
 
     def __init__(self):
         """ Init camera and wheels"""
@@ -25,13 +34,16 @@ class DeepPiCar(object):
         self.camera.set(3, self.__SCREEN_WIDTH)
         self.camera.set(4, self.__SCREEN_HEIGHT)
 
+        """
         self.pan_servo = picar.Servo.Servo(1)
         self.pan_servo.offset = -30  # calibrate servo to center
         self.pan_servo.write(90)
 
+        
         self.tilt_servo = picar.Servo.Servo(2)
         self.tilt_servo.offset = 20  # calibrate servo to center
         self.tilt_servo.write(90)
+        """
 
         logging.debug('Set up back wheels')
         self.back_wheels = picar.back_wheels.Back_Wheels()
@@ -39,7 +51,7 @@ class DeepPiCar(object):
 
         logging.debug('Set up front wheels')
         self.front_wheels = picar.front_wheels.Front_Wheels()
-        self.front_wheels.turning_offset = -25  # calibrate servo to center
+        #self.front_wheels.turning_offset = -25  # calibrate servo to center
         self.front_wheels.turn(90)  # Steering Range is 45 (left) - 90 (center) - 135 (right)
 
         self.lane_follower = HandCodedLaneFollower(self)
@@ -113,7 +125,7 @@ class DeepPiCar(object):
         return image
 
     def follow_lane(self, image):
-        #image = self.lane_follower.follow_lane(image)
+        image = self.lane_follower.follow_lane(image)
         return image
 
 
