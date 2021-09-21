@@ -4,24 +4,28 @@ import cv2
 import datetime
 from hand_coded_lane_follower import HandCodedLaneFollower
 from objects_on_road_processor import ObjectsOnRoadProcessor
+from end_to_end_lane_follower import EndToEndLaneFollower
 
 _SHOW_IMAGE = True
 
 
 class DeepPiCar(object):
 
-    __INITIAL_SPEED = 0
+    __INITIAL_SPEED = 60
     #__SCREEN_WIDTH = 320
     #__SCREEN_HEIGHT = 240
 
-    __SCREEN_WIDTH = 640
-    __SCREEN_HEIGHT = 480
-
-    #__SCREEN_WIDTH = 848
+    #__SCREEN_WIDTH = 640
     #__SCREEN_HEIGHT = 480
+
+    __SCREEN_WIDTH = 848
+    __SCREEN_HEIGHT = 480
 
     #__SCREEN_WIDTH = 1280
     #__SCREEN_HEIGHT = 720
+
+    #__SCREEN_WIDTH = 300
+    #__SCREEN_HEIGHT= 200
 
     def __init__(self):
         """ Init camera and wheels"""
@@ -54,9 +58,10 @@ class DeepPiCar(object):
         #self.front_wheels.turning_offset = -25  # calibrate servo to center
         self.front_wheels.turn(90)  # Steering Range is 45 (left) - 90 (center) - 135 (right)
 
-        self.lane_follower = HandCodedLaneFollower(self)
+        #self.lane_follower = HandCodedLaneFollower(self)
         self.traffic_sign_processor = ObjectsOnRoadProcessor(self)
-        # lane_follower = DeepLearningLaneFollower()
+        #self.lane_follower = DeepLearningLaneFollower(self)
+        self.lane_follower = EndToEndLaneFollower(self) 
 
         self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
         datestr = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
@@ -139,7 +144,7 @@ def show_image(title, frame, show=_SHOW_IMAGE):
 
 def main():
     with DeepPiCar() as car:
-        car.drive(40)
+        car.drive(100)
 
 
 if __name__ == '__main__':

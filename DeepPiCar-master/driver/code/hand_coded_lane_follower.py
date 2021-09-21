@@ -34,7 +34,7 @@ class HandCodedLaneFollower(object):
         new_steering_angle = compute_steering_angle(frame, lane_lines)
         self.curr_steering_angle = new_steering_angle
         #TODO: cambia esto o suaviza mejor.
-        #self.curr_steering_angle = stabilize_steering_angle(self.curr_steering_angle, new_steering_angle, len(lane_lines))
+        self.curr_steering_angle = stabilize_steering_angle(self.curr_steering_angle, new_steering_angle, len(lane_lines))
 
         if self.car is not None:
             self.car.front_wheels.turn(self.curr_steering_angle)
