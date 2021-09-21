@@ -7,7 +7,7 @@ from PIL import Image
 from traffic_objects import *
 from vardata import project_path
 
-_SHOW_IMAGE = False
+_SHOW_IMAGE = True
 
 
 class ObjectsOnRoadProcessor(object):

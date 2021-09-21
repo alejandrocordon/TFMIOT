@@ -6,7 +6,7 @@ from keras.models import load_model
 from hand_coded_lane_follower import HandCodedLaneFollower
 from vardata import project_path
 
-_SHOW_IMAGE = False
+_SHOW_IMAGE = True
 
 
 class EndToEndLaneFollower(object):
