@@ -1,9 +1,8 @@
 
+[![Watch the video](https://img.youtube.com/vi/sb-ZzHXiuYA/maxresdefault.jpg)](https://youtu.be/sb-ZzHXiuYA)
 
+[![Watch the video](https://img.youtube.com/vi/mCELCwrgiH4/maxresdefault.jpg)](https://youtu.be/mCELCwrgiH4)
 
-[![Watch the video](https://www.youtube.com/watch?v=sb-ZzHXiuYA&t=17s)
-
-[![Watch the video](https://www.youtube.com/watch?v=mCELCwrgiH4)
 
 
 
