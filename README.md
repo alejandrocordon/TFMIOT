@@ -27,10 +27,3 @@ Deep Learning in IoT: Convolutional neural networks with Images aplied to anauto
 
 
 
-
-
-
-
-[Link](url) and ![Image](src)
-```
-
