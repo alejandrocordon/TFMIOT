@@ -37,7 +37,7 @@ logger.info("DATABASE_URL: %s", os.environ.get("DATABASE_URL", "sqlite (default)
 logger.info("Working directory: %s", os.getcwd())
 logger.info("=" * 60)
 
-from dashboard.backend.api import deploy, export, metrics, model_builder, projects, training, versions
+from dashboard.backend.api import deploy, export, hf_models, metrics, model_builder, projects, training, versions
 from dashboard.backend.models.db import init_db, DATABASE_URL
 
 # Initialize database on startup
@@ -94,6 +94,23 @@ try:
 except Exception as e:
     logger.warning("[STARTUP] Could not load custom models: %s", e)
 
+# Re-register downloaded HF models
+from dashboard.backend.models.db import HFModel
+try:
+    with DBSession(engine) as session:
+        saved_hf_models = session.exec(select(HFModel)).all()
+        for m in saved_hf_models:
+            try:
+                from dashboard.backend.services.hf_hub import download_and_register
+                download_and_register(m.timm_name)
+                logger.info("[STARTUP] Re-registered HF model '%s' -> '%s'", m.timm_name, m.registry_name)
+            except Exception as e:
+                logger.warning("[STARTUP] Failed to re-register HF model '%s': %s", m.timm_name, e)
+        if saved_hf_models:
+            logger.info("[STARTUP] Re-registered %d HF model(s)", len(saved_hf_models))
+except Exception as e:
+    logger.warning("[STARTUP] Could not load HF models: %s", e)
+
 app = FastAPI(
     title="MLForge Dashboard",
     description="ML Model Factory - Train, optimize, and deploy ML models",
@@ -137,7 +154,8 @@ app.include_router(metrics.router)
 app.include_router(versions.router)
 app.include_router(deploy.router)
 app.include_router(model_builder.router)
-logger.info("[ROUTES] Registered: projects, training, export, metrics, versions, deploy, model-builder")
+app.include_router(hf_models.router)
+logger.info("[ROUTES] Registered: projects, training, export, metrics, versions, deploy, model-builder, hf-models")
 
 
 @app.get("/api/health")

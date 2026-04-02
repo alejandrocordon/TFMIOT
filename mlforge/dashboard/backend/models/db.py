@@ -126,6 +126,18 @@ class CustomModel(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class HFModel(SQLModel, table=True):
+    """A downloaded HuggingFace/timm pretrained model."""
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    timm_name: str = Field(index=True, unique=True)
+    display_name: str = ""
+    registry_name: str = ""
+    num_params: int = 0
+    default_input_size: int = 224
+    downloaded_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 def init_db():
     """Create all tables."""
     tables = list(SQLModel.metadata.tables.keys())

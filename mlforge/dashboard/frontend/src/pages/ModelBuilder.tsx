@@ -60,6 +60,10 @@ const catColors: Record<string, string> = {
   Pooling: 'bg-purple-100 text-purple-700',
   Linear: 'bg-indigo-100 text-indigo-700',
   Regularization: 'bg-red-100 text-red-700',
+  Attention: 'bg-pink-100 text-pink-700',
+  Recurrent: 'bg-cyan-100 text-cyan-700',
+  Reshape: 'bg-gray-200 text-gray-700',
+  Custom: 'bg-yellow-100 text-yellow-800',
 }
 
 // ─── Sub-components ─────────────────────────────────────────────────────
@@ -101,22 +105,43 @@ function LayerCard({
 
       {/* Inline params */}
       {info && Object.keys(info.params).length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-2" onClick={e => e.stopPropagation()}>
-          {Object.entries(info.params).map(([key, pinfo]) => (
-            <label key={key} className="flex items-center gap-1 text-xs">
-              <span className="text-gray-500">{key}:</span>
-              <input
-                type={pinfo.type === 'float' ? 'number' : 'number'}
-                step={pinfo.type === 'float' ? '0.01' : '1'}
-                value={layer.params[key] ?? pinfo.default}
-                onChange={e => {
-                  const v = pinfo.type === 'float' ? parseFloat(e.target.value) : parseInt(e.target.value)
-                  onUpdate({ ...layer.params, [key]: isNaN(v) ? pinfo.default : v })
-                }}
-                className="w-16 border rounded px-1 py-0.5 text-xs font-mono"
-              />
-            </label>
-          ))}
+        <div className="mt-2" onClick={e => e.stopPropagation()}>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(info.params).map(([key, pinfo]) => {
+              // Text/code param — full-width textarea
+              if (pinfo.type === 'text') {
+                return (
+                  <div key={key} className="w-full mt-1">
+                    <span className="text-xs text-gray-500 block mb-1">{pinfo.desc}:</span>
+                    <textarea
+                      value={layer.params[key] ?? pinfo.default}
+                      onChange={e => onUpdate({ ...layer.params, [key]: e.target.value })}
+                      rows={2}
+                      className="w-full border rounded px-2 py-1 text-xs font-mono bg-gray-900 text-green-400"
+                      spellCheck={false}
+                      placeholder={pinfo.default as string}
+                    />
+                  </div>
+                )
+              }
+              // Numeric params
+              return (
+                <label key={key} className="flex items-center gap-1 text-xs">
+                  <span className="text-gray-500">{key}:</span>
+                  <input
+                    type="number"
+                    step={pinfo.type === 'float' ? '0.01' : '1'}
+                    value={layer.params[key] ?? pinfo.default}
+                    onChange={e => {
+                      const v = pinfo.type === 'float' ? parseFloat(e.target.value) : parseInt(e.target.value)
+                      onUpdate({ ...layer.params, [key]: isNaN(v) ? pinfo.default : v })
+                    }}
+                    className="w-16 border rounded px-1 py-0.5 text-xs font-mono"
+                  />
+                </label>
+              )
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -333,7 +358,7 @@ export default function ModelBuilder() {
             <div key={t.id} className="bg-white rounded-xl border p-5 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold">{t.name}</h3>
+                  <h3 className="font-semibold text-gray-900">{t.name}</h3>
                   <p className="text-sm text-gray-500 mt-1">{t.description}</p>
                 </div>
                 <span className={`text-xs px-2 py-0.5 rounded ${

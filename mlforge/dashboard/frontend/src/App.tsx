@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
-import { Cpu, BarChart3, Upload, Play, FlaskConical, Layout, BookOpen, Tag, Rocket, Moon, Sun, Blocks } from 'lucide-react'
+import { Cpu, BarChart3, Upload, Play, FlaskConical, Layout, BookOpen, Tag, Rocket, Moon, Sun, Blocks, CloudDownload } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
 import Training from './pages/Training'
@@ -10,10 +10,12 @@ import Deploy from './pages/Deploy'
 import Playground from './pages/Playground'
 import Versions from './pages/Versions'
 import ModelBuilder from './pages/ModelBuilder'
+import HFModels from './pages/HFModels'
 
 const navItems = [
   { to: '/', icon: Layout, label: 'Dashboard' },
   { to: '/projects', icon: FlaskConical, label: 'Projects' },
+  { to: '/hf-models', icon: CloudDownload, label: 'HF Models' },
   { to: '/model-builder', icon: Blocks, label: 'Model Builder' },
   { to: '/training', icon: Play, label: 'Training' },
   { to: '/versions', icon: Tag, label: 'Versions' },
@@ -111,6 +113,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/hf-models" element={<HFModels />} />
           <Route path="/model-builder" element={<ModelBuilder />} />
           <Route path="/training" element={<Training />} />
           <Route path="/versions" element={<Versions />} />

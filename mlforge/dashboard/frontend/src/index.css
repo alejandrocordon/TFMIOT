@@ -7,13 +7,16 @@
  * Tailwind darkMode: 'class' adds .dark to <html>.
  */
 
-/* Backgrounds */
+/* ── Global body text ────────────────────────────────────── */
+.dark { color: #e5e7eb !important; }
+
+/* ── Gray Backgrounds ────────────────────────────────────── */
 .dark .bg-white { background-color: #1f2937 !important; }
 .dark .bg-gray-50 { background-color: #030712 !important; }
 .dark .bg-gray-100 { background-color: #1f2937 !important; }
 .dark .bg-gray-200 { background-color: #374151 !important; }
 
-/* Text */
+/* ── Gray Text ───────────────────────────────────────────── */
 .dark .text-gray-900 { color: #f3f4f6 !important; }
 .dark .text-gray-800 { color: #e5e7eb !important; }
 .dark .text-gray-700 { color: #d1d5db !important; }
@@ -21,31 +24,101 @@
 .dark .text-gray-500 { color: #9ca3af !important; }
 .dark .text-gray-400 { color: #6b7280 !important; }
 
-/* Borders */
+/* ── Colored Backgrounds (light → dark variants) ─────────── */
+/* Blue */
+.dark .bg-blue-50 { background-color: #1e293b !important; }
+.dark .bg-blue-100 { background-color: #1e3a5f !important; }
+.dark .text-blue-700 { color: #93c5fd !important; }
+.dark .text-blue-600 { color: #93c5fd !important; }
+.dark .border-blue-200 { border-color: #1e3a5f !important; }
+.dark .border-blue-300 { border-color: #2563eb !important; }
+
+/* Green */
+.dark .bg-green-50 { background-color: #1a2e1a !important; }
+.dark .bg-green-100 { background-color: #14532d !important; }
+.dark .text-green-700 { color: #86efac !important; }
+.dark .text-green-600 { color: #86efac !important; }
+.dark .border-green-200 { border-color: #14532d !important; }
+.dark .border-green-300 { border-color: #16a34a !important; }
+
+/* Purple */
+.dark .bg-purple-50 { background-color: #2e1a3e !important; }
+.dark .bg-purple-100 { background-color: #3b0764 !important; }
+.dark .text-purple-700 { color: #d8b4fe !important; }
+.dark .border-purple-200 { border-color: #3b0764 !important; }
+
+/* Orange */
+.dark .bg-orange-50 { background-color: #2e1f0a !important; }
+.dark .bg-orange-100 { background-color: #431407 !important; }
+.dark .text-orange-700 { color: #fdba74 !important; }
+.dark .border-orange-200 { border-color: #431407 !important; }
+
+/* Yellow */
+.dark .bg-yellow-50 { background-color: #2e2a0a !important; }
+.dark .bg-yellow-100 { background-color: #422006 !important; }
+.dark .text-yellow-700 { color: #fde047 !important; }
+.dark .text-yellow-800 { color: #fde047 !important; }
+.dark .text-yellow-600 { color: #facc15 !important; }
+.dark .border-yellow-200 { border-color: #422006 !important; }
+
+/* Red */
+.dark .bg-red-50 { background-color: #2e0a0a !important; }
+.dark .bg-red-100 { background-color: #450a0a !important; }
+.dark .text-red-700 { color: #fca5a5 !important; }
+.dark .text-red-800 { color: #fca5a5 !important; }
+.dark .text-red-500 { color: #f87171 !important; }
+.dark .border-red-200 { border-color: #450a0a !important; }
+
+/* Indigo */
+.dark .bg-indigo-100 { background-color: #1e1b4b !important; }
+.dark .text-indigo-700 { color: #a5b4fc !important; }
+
+/* Pink */
+.dark .bg-pink-100 { background-color: #3b0a2a !important; }
+.dark .text-pink-700 { color: #f9a8d4 !important; }
+
+/* Cyan */
+.dark .bg-cyan-100 { background-color: #0a2e2e !important; }
+.dark .text-cyan-700 { color: #67e8f9 !important; }
+
+/* ── Borders ─────────────────────────────────────────────── */
 .dark .border { border-color: #374151 !important; }
 .dark .border-gray-200 { border-color: #4b5563 !important; }
 .dark .border-gray-300 { border-color: #4b5563 !important; }
 .dark .divide-y > * + * { border-color: #374151 !important; }
 
-/* Inputs and selects */
+/* ── Inputs and Selects ──────────────────────────────────── */
 .dark select,
 .dark input[type="text"],
 .dark input[type="number"],
-.dark input:not([type]) {
+.dark input:not([type]),
+.dark textarea:not(.bg-gray-900) {
   background-color: #374151 !important;
   border-color: #4b5563 !important;
   color: #f3f4f6 !important;
 }
 
-/* Table headers */
+/* ── Table headers ───────────────────────────────────────── */
 .dark thead { background-color: #111827 !important; }
 .dark th { color: #9ca3af !important; }
 
-/* Hover states */
+/* ── Hover states ────────────────────────────────────────── */
 .dark .hover\:bg-gray-50:hover { background-color: #374151 !important; }
+.dark .hover\:bg-gray-100:hover { background-color: #374151 !important; }
+.dark .hover\:border-gray-300:hover { border-color: #6b7280 !important; }
+.dark .hover\:border-gray-400:hover { border-color: #9ca3af !important; }
 
-/* Shadow reduction in dark mode */
-.dark .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3) !important; }
+/* ── Shadow ──────────────────────────────────────────────── */
+.dark .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.4) !important; }
+.dark .shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4) !important; }
 
-/* Placeholder text */
+/* ── Placeholder ─────────────────────────────────────────── */
 .dark ::placeholder { color: #6b7280 !important; }
+
+/* ── Code blocks ─────────────────────────────────────────── */
+.dark code { color: #d1d5db !important; }
+.dark .font-mono { color: #d1d5db; }
+
+/* ── Ring colors for selected states ─────────────────────── */
+.dark .ring-blue-500 { --tw-ring-color: #3b82f6 !important; }
+.dark .ring-offset-1 { --tw-ring-offset-color: #1f2937 !important; }
