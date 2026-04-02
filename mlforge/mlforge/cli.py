@@ -245,9 +245,30 @@ def benchmark(
 
 
 @app.command()
-def dashboard():
-    """Launch the MLForge web dashboard. (Coming in Sprint 4)"""
-    console.print("[yellow]Dashboard coming in Sprint 4![/]")
+def dashboard(
+    port: int = typer.Option(8000, "--port", "-p", help="Port for the dashboard server"),
+    host: str = typer.Option("127.0.0.1", "--host", "-h", help="Host to bind to"),
+):
+    """Launch the MLForge web dashboard."""
+    import sys
+
+    console.print(f"\n[bold blue]MLForge Dashboard[/] starting at http://{host}:{port}\n")
+    console.print("[dim]API docs at http://{host}:{port}/docs[/]")
+    console.print("[dim]Press Ctrl+C to stop[/]\n")
+
+    try:
+        import uvicorn
+        uvicorn.run(
+            "dashboard.backend.app:app",
+            host=host,
+            port=port,
+            reload=False,
+        )
+    except ImportError:
+        console.print(
+            "[red]uvicorn is required for the dashboard. "
+            "Install with: pip install 'mlforge[dashboard]'[/]"
+        )
 
 
 def main():
