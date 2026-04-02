@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  # Full training environment
+  training:
+    build:
+      context: .
+      target: training
+    volumes:
+      - ./data:/workspace/data
+      - ./outputs:/workspace/outputs
+      - ./exported_models:/workspace/exported_models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: mlforge train --config /workspace/config.yaml
+
+  # Inference server
+  serve:
+    build:
+      context: .
+      target: serve
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./exported_models:/models
+    command: >
+      mlforge serve
+      --model /models/model.onnx
+      --host 0.0.0.0
+      --port 8080
+      --labels "clase1,clase2,clase3"
+
+  # Dashboard
+  dashboard:
+    build:
+      context: .
+      target: training
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./outputs:/workspace/outputs
+    command: mlforge dashboard --host 0.0.0.0 --port 8000

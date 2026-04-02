@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI Reference - MLForge</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="logo"><div class="logo-icon">&#9881;</div> MLForge</div>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="quickstart.html">Quickstart</a>
+            <a href="arquitectura.html">Arquitectura</a>
+            <a href="cli.html" class="active">CLI</a>
+            <a href="training.html">Training</a>
+            <a href="export.html">Export &amp; Deploy</a>
+            <a href="api.html">API</a>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <h1>CLI Reference</h1>
+    <p>MLForge proporciona 9 comandos para controlar todo el pipeline de ML desde la terminal.</p>
+
+    <div class="diagram-container">
+        <svg width="700" height="130" viewBox="0 0 700 130">
+            <rect x="0" y="0" width="700" height="130" rx="12" fill="#1e293b"/>
+            <text x="20" y="25" font-family="monospace" font-size="14" fill="#10b981" font-weight="700">$</text>
+            <text x="35" y="25" font-family="monospace" font-size="14" fill="#e2e8f0">mlforge</text>
+            <text x="100" y="25" font-family="monospace" font-size="14" fill="#fbbf24">[command]</text>
+            <text x="200" y="25" font-family="monospace" font-size="14" fill="#94a3b8">[options]</text>
+
+            <text x="20" y="55" font-family="monospace" font-size="12" fill="#38bdf8">new</text>
+            <text x="90" y="55" font-family="monospace" font-size="12" fill="#94a3b8">Crear proyecto nuevo</text>
+
+            <text x="20" y="72" font-family="monospace" font-size="12" fill="#38bdf8">train</text>
+            <text x="90" y="72" font-family="monospace" font-size="12" fill="#94a3b8">Entrenar modelo</text>
+
+            <text x="20" y="89" font-family="monospace" font-size="12" fill="#38bdf8">export</text>
+            <text x="90" y="89" font-family="monospace" font-size="12" fill="#94a3b8">Exportar formatos</text>
+
+            <text x="250" y="55" font-family="monospace" font-size="12" fill="#38bdf8">benchmark</text>
+            <text x="340" y="55" font-family="monospace" font-size="12" fill="#94a3b8">Benchmark</text>
+
+            <text x="250" y="72" font-family="monospace" font-size="12" fill="#38bdf8">deploy</text>
+            <text x="340" y="72" font-family="monospace" font-size="12" fill="#94a3b8">Generar app</text>
+
+            <text x="250" y="89" font-family="monospace" font-size="12" fill="#38bdf8">serve</text>
+            <text x="340" y="89" font-family="monospace" font-size="12" fill="#94a3b8">Servidor API</text>
+
+            <text x="480" y="55" font-family="monospace" font-size="12" fill="#38bdf8">info</text>
+            <text x="530" y="55" font-family="monospace" font-size="12" fill="#94a3b8">Arquitecturas</text>
+
+            <text x="480" y="72" font-family="monospace" font-size="12" fill="#38bdf8">dashboard</text>
+            <text x="570" y="72" font-family="monospace" font-size="12" fill="#94a3b8">Dashboard web</text>
+
+            <text x="20" y="120" font-family="monospace" font-size="11" fill="#64748b">9 comandos | PyTorch + TensorFlow | Multiplataforma</text>
+        </svg>
+    </div>
+
+    <!-- new -->
+    <div class="cmd-block">
+        <h3>mlforge new <span class="cmd-tag tag-core">CORE</span></h3>
+        <p>Crea un nuevo proyecto MLForge con estructura de directorios, config.yaml y scripts.</p>
+        <pre><span class="cmd">mlforge</span> <span class="fn">new</span> &lt;nombre&gt; [opciones]
+
+<span class="comment"># Opciones:</span>
+  <span class="flag">--task</span>, <span class="flag">-t</span>       Tipo de tarea: classification, detection  <span class="comment">[default: classification]</span>
+  <span class="flag">--framework</span>, <span class="flag">-f</span>  Framework: pytorch, tensorflow              <span class="comment">[default: pytorch]</span>
+  <span class="flag">--output</span>, <span class="flag">-o</span>     Directorio padre                             <span class="comment">[default: .]</span>
+
+<span class="comment"># Ejemplos:</span>
+<span class="cmd">mlforge</span> <span class="fn">new</span> flower_detector <span class="flag">--task</span> classification
+<span class="cmd">mlforge</span> <span class="fn">new</span> road_signs <span class="flag">--task</span> detection <span class="flag">--framework</span> tensorflow</pre>
+    </div>
+
+    <!-- train -->
+    <div class="cmd-block">
+        <h3>mlforge train <span class="cmd-tag tag-core">CORE</span></h3>
+        <p>Entrena un modelo segun la configuracion YAML. Detecta automaticamente si usar PyTorch o TensorFlow.</p>
+        <pre><span class="cmd">mlforge</span> <span class="fn">train</span> <span class="flag">--config</span> &lt;path&gt;
+
+<span class="comment"># Opciones:</span>
+  <span class="flag">--config</span>, <span class="flag">-c</span>     Ruta al archivo config.yaml  <span class="comment">[default: config.yaml]</span>
+
+<span class="comment"># El framework se selecciona automaticamente segun config:</span>
+<span class="comment"># model.framework: pytorch  -> trainer_pytorch.py (con AMP)</span>
+<span class="comment"># model.framework: tensorflow -> trainer_tf.py (Keras)</span>
+
+<span class="comment"># Ejemplo:</span>
+<span class="cmd">mlforge</span> <span class="fn">train</span> <span class="flag">--config</span> examples/01_image_classifier/config.yaml</pre>
+    </div>
+
+    <!-- export -->
+    <div class="cmd-block">
+        <h3>mlforge export <span class="cmd-tag tag-export">EXPORT</span></h3>
+        <p>Exporta el modelo entrenado a formatos de despliegue optimizados.</p>
+        <pre><span class="cmd">mlforge</span> <span class="fn">export</span> <span class="flag">--config</span> &lt;path&gt; [opciones]
+
+<span class="comment"># Opciones:</span>
+  <span class="flag">--config</span>, <span class="flag">-c</span>     Ruta al config.yaml
+  <span class="flag">--formats</span>, <span class="flag">-f</span>    Formatos: onnx, tflite, coreml, tfjs, edgetpu, all  <span class="comment">[default: config]</span>
+
+<span class="comment"># Formatos disponibles:</span>
+<span class="comment">#   onnx     - Universal (web, server, mobile)</span>
+<span class="comment">#   tflite   - Android, Raspberry Pi (con quantizacion)</span>
+<span class="comment">#   coreml   - iOS, macOS (Apple Neural Engine)</span>
+<span class="comment">#   tfjs     - Navegadores web</span>
+<span class="comment">#   edgetpu  - Google Coral TPU</span>
+
+<span class="comment"># Ejemplos:</span>
+<span class="cmd">mlforge</span> <span class="fn">export</span> <span class="flag">--config</span> config.yaml <span class="flag">--formats</span> all
+<span class="cmd">mlforge</span> <span class="fn">export</span> <span class="flag">--config</span> config.yaml <span class="flag">--formats</span> onnx,tflite</pre>
+    </div>
+
+    <!-- benchmark -->
+    <div class="cmd-block">
+        <h3>mlforge benchmark <span class="cmd-tag tag-export">EXPORT</span></h3>
+        <p>Ejecuta benchmarks de latencia y throughput comparando diferentes formatos.</p>
+        <pre><span class="cmd">mlforge</span> <span class="fn">benchmark</span> [opciones]
+
+<span class="comment"># Opciones:</span>
+  <span class="flag">--model-dir</span>, <span class="flag">-d</span>   Directorio con modelos exportados
+  <span class="flag">--config</span>, <span class="flag">-c</span>       Config para obtener input_size
+  <span class="flag">--runs</span>, <span class="flag">-n</span>         Numero de iteraciones  <span class="comment">[default: 100]</span>
+
+<span class="comment"># Ejemplo:</span>
+<span class="cmd">mlforge</span> <span class="fn">benchmark</span> <span class="flag">--model-dir</span> exported_models/ <span class="flag">--config</span> config.yaml <span class="flag">--runs</span> <span class="num">200</span></pre>
+    </div>
+
+    <!-- deploy -->
+    <div class="cmd-block">
+        <h3>mlforge deploy <span class="cmd-tag tag-deploy">DEPLOY</span></h3>
+        <p>Genera un proyecto de despliegue completo para la plataforma seleccionada.</p>
+        <pre><span class="cmd">mlforge</span> <span class="fn">deploy</span> &lt;target&gt; [opciones]
+
+<span class="comment"># Targets:</span>
+<span class="comment">#   android  - Kotlin + CameraX + TFLite</span>
+<span class="comment">#   ios      - SwiftUI + CoreML + Vision</span>
+<span class="comment">#   web      - HTML + ONNX Runtime Web</span>
+<span class="comment">#   edge     - Python + PyCoral/TFLite Runtime</span>
+<span class="comment">#   list     - Mostrar targets disponibles</span>
+
+<span class="comment"># Opciones:</span>
+  <span class="flag">--model</span>, <span class="flag">-m</span>       Ruta al modelo exportado
+  <span class="flag">--labels</span>, <span class="flag">-l</span>      Labels separados por coma
+  <span class="flag">--input-size</span>      Tamano de entrada  <span class="comment">[default: 224]</span>
+  <span class="flag">--output</span>, <span class="flag">-o</span>       Directorio de salida  <span class="comment">[default: deploy_output]</span>
+
+<span class="comment"># Ejemplos:</span>
+<span class="cmd">mlforge</span> <span class="fn">deploy</span> list
+<span class="cmd">mlforge</span> <span class="fn">deploy</span> android <span class="flag">--model</span> model.tflite <span class="flag">--labels</span> <span class="str">"gato,perro,pajaro"</span>
+<span class="cmd">mlforge</span> <span class="fn">deploy</span> web <span class="flag">--model</span> model.onnx <span class="flag">--labels</span> <span class="str">"rosa,tulipan"</span></pre>
+    </div>
+
+    <!-- serve -->
+    <div class="cmd-block">
+        <h3>mlforge serve <span class="cmd-tag tag-deploy">DEPLOY</span></h3>
+        <p>Lanza un servidor de inferencia FastAPI con endpoints REST.</p>
+        <pre><span class="cmd">mlforge</span> <span class="fn">serve</span> [opciones]
+
+<span class="comment"># Opciones:</span>
+  <span class="flag">--model</span>, <span class="flag">-m</span>        Modelo (.onnx o .pth)  <span class="comment">[requerido]</span>
+  <span class="flag">--port</span>, <span class="flag">-p</span>         Puerto  <span class="comment">[default: 8080]</span>
+  <span class="flag">--host</span>             Host  <span class="comment">[default: 127.0.0.1]</span>
+  <span class="flag">--labels</span>, <span class="flag">-l</span>       Labels separados por coma
+  <span class="flag">--input-size</span>       Tamano de entrada  <span class="comment">[default: 224]</span>
+  <span class="flag">--architecture</span>, <span class="flag">-a</span> Arquitectura (para .pth)
+  <span class="flag">--num-classes</span>, <span class="flag">-n</span>  Numero de clases  <span class="comment">[default: 10]</span>
+
+<span class="comment"># Endpoints generados:</span>
+<span class="comment">#   GET  /health        - Estado del servidor</span>
+<span class="comment">#   GET  /info          - Info del modelo</span>
+<span class="comment">#   POST /predict       - Clasificar una imagen</span>
+<span class="comment">#   POST /predict/batch - Clasificar multiples imagenes</span>
+<span class="comment">#   GET  /docs          - Documentacion Swagger</span>
+
+<span class="comment"># Ejemplo:</span>
+<span class="cmd">mlforge</span> <span class="fn">serve</span> <span class="flag">--model</span> model.onnx <span class="flag">--labels</span> <span class="str">"rosa,tulipan"</span> <span class="flag">--port</span> <span class="num">8080</span>
+
+<span class="comment"># Llamar al servidor:</span>
+<span class="cmd">curl</span> <span class="flag">-X</span> POST http://localhost:8080/predict <span class="flag">-F</span> <span class="str">"file=@flower.jpg"</span></pre>
+    </div>
+
+    <!-- info -->
+    <div class="cmd-block">
+        <h3>mlforge info <span class="cmd-tag tag-util">UTIL</span></h3>
+        <p>Muestra las arquitecturas de modelo disponibles para PyTorch y TensorFlow.</p>
+        <pre><span class="cmd">mlforge</span> <span class="fn">info</span>
+
+<span class="comment"># Muestra tabla con:</span>
+<span class="comment">#   Nombre | Parametros | Tamano | Target recomendado</span>
+<span class="comment">#   Para ambos frameworks (PyTorch y TensorFlow)</span></pre>
+    </div>
+
+    <!-- dashboard -->
+    <div class="cmd-block">
+        <h3>mlforge dashboard <span class="cmd-tag tag-util">UTIL</span></h3>
+        <p>Lanza el dashboard web con gestion de proyectos, metricas y playground.</p>
+        <pre><span class="cmd">mlforge</span> <span class="fn">dashboard</span> [opciones]
+
+<span class="comment"># Opciones:</span>
+  <span class="flag">--port</span>, <span class="flag">-p</span>   Puerto  <span class="comment">[default: 8000]</span>
+  <span class="flag">--host</span>       Host  <span class="comment">[default: 127.0.0.1]</span>
+
+<span class="comment"># Funcionalidades del dashboard:</span>
+<span class="comment">#   - Gestion de proyectos (CRUD)</span>
+<span class="comment">#   - Lanzar entrenamientos con metricas en tiempo real (WebSocket)</span>
+<span class="comment">#   - Comparar experimentos</span>
+<span class="comment">#   - Exportar modelos</span>
+<span class="comment">#   - Playground de inferencia (drag &amp; drop)</span></pre>
+    </div>
+
+</div>
+
+<footer class="footer">
+    <p>MLForge Documentation &mdash; <a href="index.html" style="color:#60a5fa">Volver al inicio</a></p>
+</footer>
+
+</body>
+</html>
