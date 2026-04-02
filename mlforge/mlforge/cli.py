@@ -338,6 +338,64 @@ def deploy(
     console.print(f"\nSee {project_dir / 'README.md'} for setup instructions.")
 
 
+@app.command(name="new")
+def new_project(
+    name: str = typer.Argument(help="Project name"),
+    task: str = typer.Option("classification", "--task", "-t", help="Task: classification, detection"),
+    framework: str = typer.Option("pytorch", "--framework", "-f", help="Framework: pytorch, tensorflow"),
+    output_dir: Path = typer.Option(".", "--output", "-o", help="Parent directory"),
+):
+    """Create a new MLForge project from template."""
+    from mlforge.project_templates import create_project
+
+    console.print(f"\n[bold blue]MLForge[/] - Creating new {task} project: {name}\n")
+
+    project_dir = create_project(
+        name=name,
+        output_dir=output_dir,
+        task=task,
+        framework=framework,
+    )
+
+    console.print(f"[bold green]Project created![/] {project_dir}")
+    console.print(f"\nNext steps:")
+    console.print(f"  cd {project_dir}")
+    console.print(f"  mlforge train --config config.yaml")
+
+
+@app.command()
+def serve(
+    model: Path = typer.Option(..., "--model", "-m", help="Path to model file (.onnx or .pth)"),
+    port: int = typer.Option(8080, "--port", "-p", help="Server port"),
+    host: str = typer.Option("127.0.0.1", "--host", help="Server host"),
+    labels: str = typer.Option("", "--labels", "-l", help="Comma-separated class labels"),
+    input_size: int = typer.Option(224, "--input-size", help="Model input image size"),
+    architecture: str = typer.Option(None, "--architecture", "-a", help="Architecture (required for .pth)"),
+    num_classes: int = typer.Option(10, "--num-classes", "-n", help="Number of classes (for .pth)"),
+):
+    """Start an inference server for a trained model."""
+    from mlforge.deploy.server import create_app
+
+    label_list = [l.strip() for l in labels.split(",") if l.strip()] if labels else None
+
+    console.print(f"\n[bold blue]MLForge Serve[/] - {model}\n")
+    console.print(f"  Model: {model}")
+    console.print(f"  Endpoint: http://{host}:{port}/predict")
+    console.print(f"  API docs: http://{host}:{port}/docs")
+    console.print(f"\n[dim]Press Ctrl+C to stop[/]\n")
+
+    fastapi_app = create_app(
+        model_path=str(model),
+        labels=label_list,
+        input_size=input_size,
+        architecture=architecture,
+        num_classes=num_classes,
+    )
+
+    import uvicorn
+    uvicorn.run(fastapi_app, host=host, port=port)
+
+
 def main():
     app()
 

@@ -80,21 +80,37 @@ def _train_one_epoch(
     criterion: nn.Module,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
+    scaler: torch.amp.GradScaler | None = None,
+    use_amp: bool = False,
 ) -> tuple[float, float]:
-    """Train for one epoch. Returns (avg_loss, accuracy)."""
+    """Train for one epoch. Returns (avg_loss, accuracy).
+
+    Supports mixed precision training via torch.amp when use_amp=True.
+    """
     model.train()
     total_loss = 0.0
     correct = 0
     total = 0
 
+    amp_dtype = torch.float16 if device.type == "cuda" else torch.bfloat16
+
     for images, labels in tqdm(loader, desc="Training", leave=False):
         images, labels = images.to(device), labels.to(device)
 
         optimizer.zero_grad()
-        outputs = model(images)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+
+        if use_amp and scaler is not None:
+            with torch.amp.autocast(device_type=device.type, dtype=amp_dtype):
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+        else:
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
 
         total_loss += loss.item() * images.size(0)
         _, predicted = outputs.max(1)
@@ -202,6 +218,12 @@ def train(config: ProjectConfig) -> Path:
     optimizer = _create_optimizer(model, config.training)
     scheduler = _create_scheduler(optimizer, config.training)
 
+    # Mixed precision training
+    use_amp = device.type in ("cuda", "cpu") and config.training.device != "mps"
+    scaler = torch.amp.GradScaler(enabled=use_amp and device.type == "cuda") if use_amp else None
+    if use_amp:
+        console.print(f"[bold green]Mixed precision:[/] enabled ({device.type})")
+
     # Callbacks
     es_config = config.training.early_stopping
     callbacks: list[Callback] = [
@@ -221,7 +243,10 @@ def train(config: ProjectConfig) -> Path:
     for epoch in range(1, config.training.epochs + 1):
         start = time.time()
 
-        train_loss, train_acc = _train_one_epoch(model, train_loader, criterion, optimizer, device)
+        train_loss, train_acc = _train_one_epoch(
+            model, train_loader, criterion, optimizer, device,
+            scaler=scaler, use_amp=use_amp,
+        )
         val_loss, val_acc = _validate(model, val_loader, criterion, device)
 
         lr = optimizer.param_groups[0]["lr"]

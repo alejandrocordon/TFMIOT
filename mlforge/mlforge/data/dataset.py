@@ -131,6 +131,16 @@ def create_dataloaders(
             generator=torch.Generator().manual_seed(42),
         )
 
+    elif config.source == "huggingface":
+        from mlforge.data.huggingface import load_huggingface_dataset
+
+        train_dataset, val_dataset, test_dataset = load_huggingface_dataset(
+            config.dataset,
+            train_transform=train_transform,
+            val_transform=val_transform,
+            data_dir=root,
+        )
+
     else:
         raise ValueError(f"Unsupported data source: {config.source}")
 
