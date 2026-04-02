@@ -1,0 +1,34 @@
+Metadata-Version: 2.4
+Name: mlforge
+Version: 0.1.0
+Summary: ML Model Factory - Train, optimize and deploy ML models to any platform
+Author: Alejandro Cordon
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: torch>=2.2
+Requires-Dist: torchvision>=0.17
+Requires-Dist: onnx>=1.15
+Requires-Dist: onnxruntime>=1.17
+Requires-Dist: typer>=0.12
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: rich>=13.0
+Requires-Dist: Pillow>=10.0
+Requires-Dist: albumentations>=1.4
+Requires-Dist: tqdm>=4.66
+Provides-Extra: tensorflow
+Requires-Dist: tensorflow>=2.16; extra == "tensorflow"
+Provides-Extra: export
+Requires-Dist: coremltools>=7.0; extra == "export"
+Requires-Dist: tf2onnx>=1.16; extra == "export"
+Provides-Extra: dashboard
+Requires-Dist: fastapi>=0.110; extra == "dashboard"
+Requires-Dist: uvicorn>=0.29; extra == "dashboard"
+Requires-Dist: sqlmodel>=0.0.16; extra == "dashboard"
+Requires-Dist: websockets>=12.0; extra == "dashboard"
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: ruff>=0.4; extra == "dev"
+Provides-Extra: all
+Requires-Dist: mlforge[dashboard,dev,export,tensorflow]; extra == "all"
