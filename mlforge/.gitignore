@@ -1,8 +1,82 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
 *.egg-info/
 dist/
 build/
+.venv/
+venv/
+*.egg
+
+# Trained models & checkpoints
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.keras
+*.savedmodel
+*.pb
+
+# Exported models
+*.onnx
+*.tflite
+*.mlpackage
+*.mlmodel
+*.edgetpu
+*.tfjs
+
+# Model weights & large binaries
+*.bin
+*.safetensors
+*.msgpack
+
+# Training outputs
+outputs/
+exported_models/
+deployments/
+configs/run_*.yaml
+
+# Data & datasets (downloaded at runtime)
+data/
+*.tar.gz
+*.tar
+*.zip
+*.gz
+
+# Database
 *.db
+*.sqlite3
+
+# Node
 node_modules/
+dashboard/frontend/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing & linting
 .pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Docker volumes (local)
+pgdata/
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Torch Hub cache
+.cache/
