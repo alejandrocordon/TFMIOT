@@ -37,7 +37,7 @@ logger.info("DATABASE_URL: %s", os.environ.get("DATABASE_URL", "sqlite (default)
 logger.info("Working directory: %s", os.getcwd())
 logger.info("=" * 60)
 
-from dashboard.backend.api import deploy, export, metrics, projects, training, versions
+from dashboard.backend.api import deploy, export, metrics, model_builder, projects, training, versions
 from dashboard.backend.models.db import init_db, DATABASE_URL
 
 # Initialize database on startup
@@ -76,6 +76,23 @@ try:
             logger.info("[STARTUP] Fixed %d stuck run(s)", len(stuck_runs))
 except Exception as e:
     logger.warning("[STARTUP] Could not check stuck runs: %s", e)
+
+# Load custom models from DB into the registry
+from dashboard.backend.models.db import CustomModel
+from dashboard.backend.services.model_codegen import register_custom_model
+try:
+    with DBSession(engine) as session:
+        custom_models = session.exec(select(CustomModel)).all()
+        for m in custom_models:
+            ok = register_custom_model(m.name, m.code)
+            if ok:
+                logger.info("[STARTUP] Loaded custom model '%s' (%d params)", m.name, m.num_params)
+            else:
+                logger.warning("[STARTUP] Failed to load custom model '%s'", m.name)
+        if custom_models:
+            logger.info("[STARTUP] Loaded %d custom model(s)", len(custom_models))
+except Exception as e:
+    logger.warning("[STARTUP] Could not load custom models: %s", e)
 
 app = FastAPI(
     title="MLForge Dashboard",
@@ -119,7 +136,8 @@ app.include_router(export.router)
 app.include_router(metrics.router)
 app.include_router(versions.router)
 app.include_router(deploy.router)
-logger.info("[ROUTES] Registered: projects, training, export, metrics, versions, deploy")
+app.include_router(model_builder.router)
+logger.info("[ROUTES] Registered: projects, training, export, metrics, versions, deploy, model-builder")
 
 
 @app.get("/api/health")

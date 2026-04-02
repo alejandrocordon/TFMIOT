@@ -114,6 +114,18 @@ class DeployedApp(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class CustomModel(SQLModel, table=True):
+    """A user-designed custom neural network."""
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(index=True, unique=True)
+    description: str = ""
+    layers_json: str = "[]"
+    code: str = ""
+    num_params: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 def init_db():
     """Create all tables."""
     tables = list(SQLModel.metadata.tables.keys())

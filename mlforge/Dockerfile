@@ -95,13 +95,14 @@ FROM training AS dashboard
 # Copy built frontend into the expected location
 COPY --from=frontend-build /app/frontend/dist /app/mlforge/dashboard/frontend/dist
 
-# Install dashboard dependencies (including PostgreSQL driver)
+# Install dashboard dependencies (including PostgreSQL driver and timm for HF models)
 RUN pip install --no-cache-dir \
     fastapi>=0.110 \
     uvicorn>=0.29 \
     sqlmodel>=0.0.16 \
     websockets>=12.0 \
     python-multipart \
+    timm>=1.0 \
     psycopg2-binary>=2.9
 
 WORKDIR /workspace

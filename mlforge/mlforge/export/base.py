@@ -70,19 +70,61 @@ class BaseExporter(ABC):
         }
 
 
+def _infer_num_classes_from_checkpoint(state_dict: dict) -> int | None:
+    """Try to infer num_classes from the last linear layer in the checkpoint."""
+    # Common patterns for classification heads
+    candidates = [
+        "classifier.3.weight",  # MobileNetV3
+        "classifier.3.bias",
+        "classifier.1.weight",  # EfficientNet, some MobileNets
+        "classifier.weight",    # Simple linear head
+        "fc.weight",            # ResNet
+        "head.weight",          # Some ViT-style models
+    ]
+    for key in candidates:
+        if key in state_dict:
+            shape = state_dict[key].shape
+            num_classes = shape[0]
+            logger.info(
+                "Inferred num_classes=%d from checkpoint key '%s' (shape=%s)",
+                num_classes, key, list(shape),
+            )
+            return num_classes
+    return None
+
+
 def load_model_from_checkpoint(
     architecture: str,
     checkpoint_path: Path,
     num_classes: int,
     pretrained: bool = False,
 ) -> nn.Module:
-    """Load a model from a .pth checkpoint file."""
+    """Load a model from a .pth checkpoint file.
+
+    If num_classes doesn't match the checkpoint, auto-corrects by inspecting
+    the checkpoint's classifier layer shape.
+    """
     from mlforge.models.registry import create_pytorch_model
 
-    model = create_pytorch_model(architecture, num_classes, pretrained=pretrained)
     state_dict = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
+
+    # Auto-detect num_classes from checkpoint to avoid size mismatch
+    inferred = _infer_num_classes_from_checkpoint(state_dict)
+    if inferred is not None and inferred != num_classes:
+        logger.warning(
+            "num_classes mismatch: config says %d but checkpoint has %d. Using checkpoint value.",
+            num_classes, inferred,
+        )
+        num_classes = inferred
+
+    model = create_pytorch_model(architecture, num_classes, pretrained=pretrained)
     model.load_state_dict(state_dict)
     model.eval()
+    logger.info(
+        "Loaded %s from %s (num_classes=%d, size=%.1f MB)",
+        architecture, checkpoint_path.name, num_classes,
+        checkpoint_path.stat().st_size / (1024 * 1024),
+    )
     return model
 
 
