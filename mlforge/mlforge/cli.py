@@ -271,6 +271,50 @@ def dashboard(
         )
 
 
+@app.command()
+def deploy(
+    target: str = typer.Argument(help="Target platform: android, ios, web, edge"),
+    output_dir: Path = typer.Option(".", "--output", "-o", help="Output directory"),
+    model: Path = typer.Option(None, "--model", "-m", help="Path to exported model file"),
+    labels: str = typer.Option("", "--labels", "-l", help="Comma-separated class labels"),
+    input_size: int = typer.Option(224, "--input-size", help="Model input image size"),
+):
+    """Generate a deployment project for a target platform."""
+    import logging
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+    from mlforge.deploy.scaffold import scaffold, list_targets
+
+    if target == "list":
+        from rich.table import Table
+
+        table = Table(title="Deployment Targets")
+        table.add_column("Target", style="cyan bold")
+        table.add_column("Description")
+        table.add_column("Model Format", style="green")
+
+        for t in list_targets():
+            table.add_row(t["name"], t["description"], t["model_format"])
+        console.print(table)
+        return
+
+    label_list = [l.strip() for l in labels.split(",") if l.strip()] if labels else None
+
+    console.print(f"\n[bold blue]MLForge Deploy[/] → {target}\n")
+
+    project_dir = scaffold(
+        target=target,
+        output_dir=output_dir,
+        model_path=model,
+        labels=label_list,
+        input_size=input_size,
+    )
+
+    console.print(f"[bold green]Deploy project created![/] {project_dir}")
+    console.print(f"\nSee {project_dir / 'README.md'} for setup instructions.")
+
+
 def main():
     app()
 
