@@ -33,14 +33,19 @@ def train(
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     from mlforge.config import load_config
-    from mlforge.training.trainer_pytorch import train as run_training
 
     console.print(f"\n[bold blue]MLForge[/] - Training from {config}\n")
 
     project_config = load_config(config)
     console.print(f"[bold]Project:[/] {project_config.name}")
     console.print(f"[bold]Task:[/] {project_config.task}")
+    console.print(f"[bold]Framework:[/] {project_config.model.framework}")
     console.print()
+
+    if project_config.model.framework.lower() in ("tensorflow", "tf", "keras"):
+        from mlforge.training.trainer_tf import train as run_training
+    else:
+        from mlforge.training.trainer_pytorch import train as run_training
 
     output_dir = run_training(project_config)
     console.print(f"\n[bold green]Training complete![/] Results in {output_dir}")
@@ -52,24 +57,42 @@ def info():
     from mlforge.models.classifier import MODEL_INFO
     # Ensure models are registered
     import mlforge.models.classifier  # noqa: F811
-    from mlforge.models.registry import list_architectures
+    from mlforge.models.registry import list_architectures, list_tf_architectures
 
-    table = Table(title="Available Architectures")
+    table = Table(title="Available Architectures (PyTorch)")
     table.add_column("Name", style="cyan bold")
     table.add_column("Parameters", justify="right")
     table.add_column("Size", justify="right")
     table.add_column("Target", style="green")
 
     for name in list_architectures():
-        info = MODEL_INFO.get(name, {})
+        mi = MODEL_INFO.get(name, {})
         table.add_row(
             name,
-            info.get("params", "?"),
-            info.get("size", "?"),
-            info.get("target", "?"),
+            mi.get("params", "?"),
+            mi.get("size", "?"),
+            mi.get("target", "?"),
         )
 
     console.print(table)
+
+    # Show TF architectures if available
+    try:
+        import mlforge.models.classifier_tf  # noqa: F401
+        tf_archs = list_tf_architectures()
+        if tf_archs:
+            console.print()
+            tf_table = Table(title="Available Architectures (TensorFlow)")
+            tf_table.add_column("Name", style="cyan bold")
+            tf_table.add_column("Notes")
+            for name in tf_archs:
+                note = "Keras equivalent"
+                if name in ("resnet18", "resnet34"):
+                    note = "Maps to ResNet50 (smallest Keras ResNet)"
+                tf_table.add_row(name, note)
+            console.print(tf_table)
+    except ImportError:
+        pass
 
 
 @app.command(name="export")
