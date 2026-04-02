@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLForge - Documentacion</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="logo">
+            <div class="logo-icon">&#9881;</div>
+            MLForge
+        </div>
+        <nav>
+            <a href="index.html" class="active">Inicio</a>
+            <a href="quickstart.html">Quickstart</a>
+            <a href="arquitectura.html">Arquitectura</a>
+            <a href="cli.html">CLI</a>
+            <a href="training.html">Training</a>
+            <a href="export.html">Export &amp; Deploy</a>
+            <a href="api.html">API</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+    <h1>MLForge</h1>
+    <p>Framework completo para crear, entrenar, optimizar y desplegar modelos de Machine Learning en cualquier plataforma.</p>
+    <div class="hero-badges">
+        <span class="badge">&#9889; PyTorch + TensorFlow</span>
+        <span class="badge">&#128241; Android &amp; iOS</span>
+        <span class="badge">&#127760; Web Browser</span>
+        <span class="badge">&#129302; Raspberry Pi + Coral</span>
+        <span class="badge">&#128202; Dashboard Web</span>
+    </div>
+</section>
+
+<div class="container">
+
+    <!-- Pipeline Overview Diagram -->
+    <h2>Pipeline Completo</h2>
+    <div class="diagram-container">
+        <svg width="900" height="120" viewBox="0 0 900 120">
+            <!-- Boxes -->
+            <rect x="10" y="35" width="120" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+            <text x="70" y="65" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Datos</text>
+
+            <polygon points="155,60 175,45 175,52 195,52 195,68 175,68 175,75" fill="#94a3b8"/>
+
+            <rect x="210" y="35" width="120" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+            <text x="270" y="65" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Modelo</text>
+
+            <polygon points="355,60 375,45 375,52 395,52 395,68 375,68 375,75" fill="#94a3b8"/>
+
+            <rect x="410" y="35" width="120" height="50" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+            <text x="470" y="65" text-anchor="middle" font-size="13" font-weight="600" fill="#065f46">Training</text>
+
+            <polygon points="555,60 575,45 575,52 595,52 595,68 575,68 575,75" fill="#94a3b8"/>
+
+            <rect x="610" y="35" width="120" height="50" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="670" y="65" text-anchor="middle" font-size="13" font-weight="600" fill="#5b21b6">Export</text>
+
+            <polygon points="755,60 775,45 775,52 795,52 795,68 775,68 775,75" fill="#94a3b8"/>
+
+            <rect x="810" y="35" width="80" height="50" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+            <text x="850" y="65" text-anchor="middle" font-size="13" font-weight="600" fill="#9a3412">Deploy</text>
+
+            <!-- Labels below -->
+            <text x="70" y="105" text-anchor="middle" font-size="11" fill="#64748b">torchvision</text>
+            <text x="70" y="118" text-anchor="middle" font-size="11" fill="#64748b">HuggingFace, local</text>
+
+            <text x="270" y="105" text-anchor="middle" font-size="11" fill="#64748b">MobileNet, ResNet</text>
+            <text x="270" y="118" text-anchor="middle" font-size="11" fill="#64748b">EfficientNet, YOLO</text>
+
+            <text x="470" y="105" text-anchor="middle" font-size="11" fill="#64748b">AMP, callbacks</text>
+            <text x="470" y="118" text-anchor="middle" font-size="11" fill="#64748b">early stopping</text>
+
+            <text x="670" y="105" text-anchor="middle" font-size="11" fill="#64748b">ONNX, TFLite</text>
+            <text x="670" y="118" text-anchor="middle" font-size="11" fill="#64748b">CoreML, TF.js</text>
+
+            <text x="850" y="105" text-anchor="middle" font-size="11" fill="#64748b">Android, iOS</text>
+            <text x="850" y="118" text-anchor="middle" font-size="11" fill="#64748b">Web, Edge TPU</text>
+        </svg>
+        <div class="diagram-caption">Pipeline de MLForge: desde datos hasta despliegue en cualquier plataforma</div>
+    </div>
+
+    <!-- Feature Cards -->
+    <h2>Funcionalidades Principales</h2>
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-icon blue">&#128736;</div>
+            <h3>YAML-Driven</h3>
+            <p>Configura todo el pipeline ML desde un solo archivo YAML: datos, modelo, training, export y deploy.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon green">&#9889;</div>
+            <h3>Dual Framework</h3>
+            <p>Soporte completo para PyTorch y TensorFlow/Keras. Cambia con solo una linea en el config.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon purple">&#128230;</div>
+            <h3>Export Universal</h3>
+            <p>Exporta a ONNX, TFLite, CoreML, TF.js y Edge TPU con quantizacion automatica.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon orange">&#128241;</div>
+            <h3>Deploy Everywhere</h3>
+            <p>Genera proyectos listos para Android (Kotlin), iOS (Swift), Web (JS) y Raspberry Pi.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon teal">&#128202;</div>
+            <h3>Dashboard Web</h3>
+            <p>Dashboard React con metricas en tiempo real, gestion de proyectos y playground de inferencia.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon red">&#127891;</div>
+            <h3>Educational</h3>
+            <p>6 notebooks interactivos: desde redes neuronales desde cero hasta despliegue en produccion.</p>
+        </div>
+    </div>
+
+    <!-- Architecture Overview -->
+    <h2>Arquitectura del Proyecto</h2>
+    <div class="diagram-container">
+        <svg width="800" height="400" viewBox="0 0 800 400">
+            <!-- CLI Layer -->
+            <rect x="50" y="10" width="700" height="50" rx="10" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+            <text x="400" y="40" text-anchor="middle" font-size="16" font-weight="700" fill="white">CLI  (mlforge train | export | deploy | serve | new)</text>
+
+            <!-- Config -->
+            <rect x="50" y="80" width="160" height="50" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+            <text x="130" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">config.yaml</text>
+
+            <!-- Data Layer -->
+            <rect x="230" y="80" width="160" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+            <text x="310" y="100" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Data Pipeline</text>
+            <text x="310" y="116" text-anchor="middle" font-size="10" fill="#3b82f6">torchvision | HF | local</text>
+
+            <!-- Models -->
+            <rect x="410" y="80" width="160" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+            <text x="490" y="100" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Model Registry</text>
+            <text x="490" y="116" text-anchor="middle" font-size="10" fill="#3b82f6">PyTorch | TF/Keras</text>
+
+            <!-- Dashboard -->
+            <rect x="590" y="80" width="160" height="50" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2"/>
+            <text x="670" y="100" text-anchor="middle" font-size="13" font-weight="600" fill="#0d9488">Dashboard</text>
+            <text x="670" y="116" text-anchor="middle" font-size="10" fill="#14b8a6">FastAPI + React</text>
+
+            <!-- Training Layer -->
+            <rect x="50" y="160" width="340" height="70" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+            <text x="220" y="185" text-anchor="middle" font-size="15" font-weight="700" fill="#065f46">Training Engine</text>
+            <text x="120" y="210" text-anchor="middle" font-size="11" fill="#047857">PyTorch Trainer</text>
+            <text x="280" y="210" text-anchor="middle" font-size="11" fill="#047857">TensorFlow Trainer</text>
+            <line x1="200" y1="195" x2="200" y2="220" stroke="#a7f3d0" stroke-width="1"/>
+
+            <!-- Callbacks/Metrics -->
+            <rect x="410" y="160" width="340" height="70" rx="8" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+            <text x="580" y="185" text-anchor="middle" font-size="15" font-weight="700" fill="#9d174d">Callbacks &amp; Metrics</text>
+            <text x="490" y="210" text-anchor="middle" font-size="11" fill="#be185d">Early Stopping</text>
+            <text x="660" y="210" text-anchor="middle" font-size="11" fill="#be185d">Checkpoints | AMP</text>
+
+            <!-- Export Layer -->
+            <rect x="50" y="260" width="700" height="60" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="400" y="285" text-anchor="middle" font-size="15" font-weight="700" fill="#5b21b6">Export Module</text>
+
+            <rect x="80" y="295" width="90" height="20" rx="4" fill="#c4b5fd"/>
+            <text x="125" y="309" text-anchor="middle" font-size="10" font-weight="600" fill="#4c1d95">ONNX</text>
+
+            <rect x="185" y="295" width="90" height="20" rx="4" fill="#c4b5fd"/>
+            <text x="230" y="309" text-anchor="middle" font-size="10" font-weight="600" fill="#4c1d95">TFLite</text>
+
+            <rect x="290" y="295" width="90" height="20" rx="4" fill="#c4b5fd"/>
+            <text x="335" y="309" text-anchor="middle" font-size="10" font-weight="600" fill="#4c1d95">CoreML</text>
+
+            <rect x="395" y="295" width="90" height="20" rx="4" fill="#c4b5fd"/>
+            <text x="440" y="309" text-anchor="middle" font-size="10" font-weight="600" fill="#4c1d95">TF.js</text>
+
+            <rect x="500" y="295" width="90" height="20" rx="4" fill="#c4b5fd"/>
+            <text x="545" y="309" text-anchor="middle" font-size="10" font-weight="600" fill="#4c1d95">Edge TPU</text>
+
+            <rect x="605" y="295" width="120" height="20" rx="4" fill="#c4b5fd"/>
+            <text x="665" y="309" text-anchor="middle" font-size="10" font-weight="600" fill="#4c1d95">Quantization</text>
+
+            <!-- Deploy Layer -->
+            <rect x="50" y="345" width="700" height="50" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+            <text x="400" y="365" text-anchor="middle" font-size="15" font-weight="700" fill="#9a3412">Deploy &amp; Serve</text>
+
+            <text x="150" y="385" text-anchor="middle" font-size="11" fill="#c2410c">Android (Kotlin)</text>
+            <text x="300" y="385" text-anchor="middle" font-size="11" fill="#c2410c">iOS (Swift)</text>
+            <text x="440" y="385" text-anchor="middle" font-size="11" fill="#c2410c">Web (ONNX RT)</text>
+            <text x="580" y="385" text-anchor="middle" font-size="11" fill="#c2410c">Edge (RPi+Coral)</text>
+            <text x="700" y="385" text-anchor="middle" font-size="11" fill="#c2410c">Server (FastAPI)</text>
+        </svg>
+        <div class="diagram-caption">Arquitectura completa de MLForge: desde la configuracion YAML hasta el despliegue multiplataforma</div>
+    </div>
+
+    <!-- Quick Start -->
+    <h2>Inicio Rapido</h2>
+    <div class="alert alert-info">
+        <strong>Requisitos:</strong> Python 3.9+, pip. GPU opcional pero recomendada para training.
+    </div>
+
+    <ol class="steps">
+        <li>
+            <strong>Instalar MLForge</strong>
+            <pre><span class="cmd">pip</span> <span class="fn">install</span> <span class="flag">-e</span> <span class="str">.</span>[all]</pre>
+        </li>
+        <li>
+            <strong>Crear un nuevo proyecto</strong>
+            <pre><span class="cmd">mlforge</span> <span class="fn">new</span> mi_clasificador <span class="flag">--task</span> classification</pre>
+        </li>
+        <li>
+            <strong>Entrenar el modelo</strong>
+            <pre><span class="cmd">mlforge</span> <span class="fn">train</span> <span class="flag">--config</span> config.yaml</pre>
+        </li>
+        <li>
+            <strong>Exportar a formatos de despliegue</strong>
+            <pre><span class="cmd">mlforge</span> <span class="fn">export</span> <span class="flag">--config</span> config.yaml <span class="flag">--formats</span> all</pre>
+        </li>
+        <li>
+            <strong>Desplegar en cualquier plataforma</strong>
+            <pre><span class="cmd">mlforge</span> <span class="fn">deploy</span> android <span class="flag">--model</span> model.tflite <span class="flag">--labels</span> <span class="str">"rosa,tulipan,girasol"</span></pre>
+        </li>
+    </ol>
+
+    <!-- Links -->
+    <h2>Documentacion</h2>
+    <div class="card-grid">
+        <a href="quickstart.html" class="card" style="text-decoration:none; color:inherit;">
+            <div class="card-icon green">&#128640;</div>
+            <h3>Quickstart</h3>
+            <p>Guia paso a paso para tu primer modelo en 5 minutos.</p>
+        </a>
+        <a href="arquitectura.html" class="card" style="text-decoration:none; color:inherit;">
+            <div class="card-icon blue">&#127959;</div>
+            <h3>Arquitectura</h3>
+            <p>Estructura del proyecto, modulos y flujo de datos.</p>
+        </a>
+        <a href="cli.html" class="card" style="text-decoration:none; color:inherit;">
+            <div class="card-icon purple">&#128187;</div>
+            <h3>CLI Reference</h3>
+            <p>Todos los comandos con opciones y ejemplos.</p>
+        </a>
+        <a href="training.html" class="card" style="text-decoration:none; color:inherit;">
+            <div class="card-icon orange">&#9881;</div>
+            <h3>Training</h3>
+            <p>Configuracion de entrenamiento, modelos y datos.</p>
+        </a>
+        <a href="export.html" class="card" style="text-decoration:none; color:inherit;">
+            <div class="card-icon red">&#128230;</div>
+            <h3>Export &amp; Deploy</h3>
+            <p>Exportacion, optimizacion y despliegue multiplataforma.</p>
+        </a>
+        <a href="api.html" class="card" style="text-decoration:none; color:inherit;">
+            <div class="card-icon teal">&#128218;</div>
+            <h3>API Reference</h3>
+            <p>Referencia de modulos y clases Python.</p>
+        </a>
+    </div>
+
+</div>
+
+<footer class="footer">
+    <p>MLForge Documentation &mdash; Framework para ML en Edge/Mobile</p>
+</footer>
+
+</body>
+</html>

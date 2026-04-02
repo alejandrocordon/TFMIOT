@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training - MLForge</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="logo"><div class="logo-icon">&#9881;</div> MLForge</div>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="quickstart.html">Quickstart</a>
+            <a href="arquitectura.html">Arquitectura</a>
+            <a href="cli.html">CLI</a>
+            <a href="training.html" class="active">Training</a>
+            <a href="export.html">Export &amp; Deploy</a>
+            <a href="api.html">API</a>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <h1>Training Pipeline</h1>
+    <p>MLForge soporta entrenamiento con PyTorch y TensorFlow/Keras, con mixed precision automatico, callbacks y tracking de metricas.</p>
+
+    <h2>Flujo de Entrenamiento</h2>
+    <div class="diagram-container">
+        <svg width="800" height="320" viewBox="0 0 800 320">
+            <!-- Load Config -->
+            <rect x="330" y="5" width="140" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+            <text x="400" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#92400e">config.yaml</text>
+            <line x1="400" y1="45" x2="400" y2="60" stroke="#94a3b8" stroke-width="2"/>
+            <polygon points="400,65 394,58 406,58" fill="#94a3b8"/>
+
+            <!-- Load Data + Model in parallel -->
+            <rect x="120" y="70" width="200" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+            <text x="220" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">Cargar Datos</text>
+            <text x="220" y="108" text-anchor="middle" font-size="10" fill="#3b82f6">Augmentation + DataLoaders</text>
+
+            <rect x="480" y="70" width="200" height="50" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+            <text x="580" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">Crear Modelo</text>
+            <text x="580" y="108" text-anchor="middle" font-size="10" fill="#047857">Pretrained + Custom Head</text>
+
+            <line x1="370" y1="65" x2="220" y2="70" stroke="#94a3b8" stroke-width="1.5"/>
+            <line x1="430" y1="65" x2="580" y2="70" stroke="#94a3b8" stroke-width="1.5"/>
+
+            <!-- Converge -->
+            <line x1="220" y1="120" x2="400" y2="145" stroke="#94a3b8" stroke-width="1.5"/>
+            <line x1="580" y1="120" x2="400" y2="145" stroke="#94a3b8" stroke-width="1.5"/>
+
+            <!-- Training Loop -->
+            <rect x="250" y="145" width="300" height="80" rx="10" fill="#fce7f3" stroke="#ec4899" stroke-width="3"/>
+            <text x="400" y="170" text-anchor="middle" font-size="14" font-weight="800" fill="#9d174d">Training Loop</text>
+
+            <!-- Inner loop items -->
+            <text x="310" y="195" text-anchor="middle" font-size="10" fill="#be185d">Forward</text>
+            <text x="370" y="195" text-anchor="middle" font-size="10" fill="#be185d">Loss</text>
+            <text x="430" y="195" text-anchor="middle" font-size="10" fill="#be185d">Backward</text>
+            <text x="500" y="195" text-anchor="middle" font-size="10" fill="#be185d">Update</text>
+
+            <polygon points="335,192 343,188 343,190 350,190 350,194 343,194 343,196" fill="#f9a8d4"/>
+            <polygon points="395,192 403,188 403,190 410,190 410,194 403,194 403,196" fill="#f9a8d4"/>
+            <polygon points="462,192 470,188 470,190 477,190 477,194 470,194 470,196" fill="#f9a8d4"/>
+
+            <!-- Loop arrow -->
+            <text x="400" y="215" text-anchor="middle" font-size="9" fill="#9d174d">AMP (float16/bfloat16)</text>
+
+            <!-- Callbacks -->
+            <rect x="600" y="155" width="170" height="60" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+            <text x="685" y="175" text-anchor="middle" font-size="11" font-weight="600" fill="#9a3412">Callbacks</text>
+            <text x="685" y="192" text-anchor="middle" font-size="10" fill="#c2410c">EarlyStopping</text>
+            <text x="685" y="205" text-anchor="middle" font-size="10" fill="#c2410c">ModelCheckpoint</text>
+            <line x1="550" y1="185" x2="600" y2="185" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="4"/>
+
+            <!-- Metrics -->
+            <rect x="30" y="155" width="170" height="60" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="115" y="175" text-anchor="middle" font-size="11" font-weight="600" fill="#5b21b6">MetricsTracker</text>
+            <text x="115" y="192" text-anchor="middle" font-size="10" fill="#7c3aed">metrics.json</text>
+            <text x="115" y="205" text-anchor="middle" font-size="10" fill="#7c3aed">Dashboard WebSocket</text>
+            <line x1="250" y1="185" x2="200" y2="185" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4"/>
+
+            <!-- Outputs -->
+            <line x1="400" y1="225" x2="400" y2="250" stroke="#94a3b8" stroke-width="2"/>
+            <polygon points="400,255 394,248 406,248" fill="#94a3b8"/>
+
+            <rect x="140" y="260" width="120" height="40" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="200" y="284" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">best_model.pth</text>
+
+            <rect x="290" y="260" width="120" height="40" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="350" y="284" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">metrics.json</text>
+
+            <rect x="440" y="260" width="120" height="40" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="500" y="284" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">final_model.pth</text>
+
+            <line x1="350" y1="255" x2="200" y2="260" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3"/>
+            <line x1="400" y1="255" x2="350" y2="260" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3"/>
+            <line x1="450" y1="255" x2="500" y2="260" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3"/>
+        </svg>
+        <div class="diagram-caption">Flujo completo del entrenamiento: desde config hasta checkpoints y metricas</div>
+    </div>
+
+    <h2>Fuentes de Datos</h2>
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-icon blue">&#128230;</div>
+            <h3>torchvision</h3>
+            <p>Datasets integrados: <code>flowers102</code>, <code>cifar10</code>, <code>cifar100</code>, <code>food101</code>, <code>stanford_cars</code>. Descarga automatica.</p>
+            <pre style="font-size:12px"><span class="kw">data</span>:
+  <span class="fn">source</span>: <span class="str">torchvision</span>
+  <span class="fn">dataset</span>: <span class="str">flowers102</span></pre>
+        </div>
+        <div class="card">
+            <div class="card-icon green">&#129303;</div>
+            <h3>HuggingFace</h3>
+            <p>Cualquier dataset de imagen del Hub: <code>beans</code>, <code>food101</code>, <code>username/my_dataset</code>.</p>
+            <pre style="font-size:12px"><span class="kw">data</span>:
+  <span class="fn">source</span>: <span class="str">huggingface</span>
+  <span class="fn">dataset</span>: <span class="str">beans</span></pre>
+        </div>
+        <div class="card">
+            <div class="card-icon purple">&#128193;</div>
+            <h3>Local (ImageFolder)</h3>
+            <p>Directorio local con una carpeta por clase. Ideal para datasets propios.</p>
+            <pre style="font-size:12px"><span class="kw">data</span>:
+  <span class="fn">source</span>: <span class="str">local</span>
+  <span class="fn">data_dir</span>: <span class="str">./mi_dataset/</span></pre>
+        </div>
+    </div>
+
+    <h2>Modelos Disponibles</h2>
+
+    <h3>Clasificacion (PyTorch)</h3>
+    <table>
+        <tr><th>Arquitectura</th><th>Parametros</th><th>Tamano</th><th>Target</th><th>Config</th></tr>
+        <tr><td><code>mobilenet_v3_small</code></td><td>2.5M</td><td>~10MB</td><td>Mobile / Edge</td><td><code>architecture: mobilenet_v3_small</code></td></tr>
+        <tr><td><code>mobilenet_v3_large</code></td><td>5.4M</td><td>~22MB</td><td>Mobile</td><td><code>architecture: mobilenet_v3_large</code></td></tr>
+        <tr><td><code>efficientnet_b0</code></td><td>5.3M</td><td>~21MB</td><td>Mobile / Server</td><td><code>architecture: efficientnet_b0</code></td></tr>
+        <tr><td><code>efficientnet_b1</code></td><td>7.8M</td><td>~31MB</td><td>Server</td><td><code>architecture: efficientnet_b1</code></td></tr>
+        <tr><td><code>resnet18</code></td><td>11.7M</td><td>~45MB</td><td>Server / Learning</td><td><code>architecture: resnet18</code></td></tr>
+        <tr><td><code>resnet34</code></td><td>21.8M</td><td>~84MB</td><td>Server</td><td><code>architecture: resnet34</code></td></tr>
+    </table>
+
+    <h3>Clasificacion (TensorFlow/Keras)</h3>
+    <p>Las mismas arquitecturas estan disponibles en TensorFlow con <code>framework: tensorflow</code> en el config. Adicionalmente se incluye <code>resnet50</code>.</p>
+
+    <h3>Deteccion de Objetos</h3>
+    <table>
+        <tr><th>Modelo</th><th>Parametros</th><th>Tamano</th><th>Descripcion</th></tr>
+        <tr><td><code>yolov8n</code></td><td>3.2M</td><td>~6MB</td><td>Nano — mas rapido</td></tr>
+        <tr><td><code>yolov8s</code></td><td>11.2M</td><td>~22MB</td><td>Small — equilibrado</td></tr>
+        <tr><td><code>yolov8m</code></td><td>25.9M</td><td>~52MB</td><td>Medium — buena precision</td></tr>
+        <tr><td><code>yolov8l</code></td><td>43.7M</td><td>~87MB</td><td>Large — alta precision</td></tr>
+        <tr><td><code>yolov8x</code></td><td>68.2M</td><td>~136MB</td><td>XLarge — maxima precision</td></tr>
+    </table>
+
+    <h2>Data Augmentation</h2>
+    <div class="diagram-container">
+        <svg width="750" height="160" viewBox="0 0 750 160">
+            <!-- Original -->
+            <rect x="10" y="20" width="90" height="90" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+            <text x="55" y="70" text-anchor="middle" font-size="30" fill="#64748b">&#128247;</text>
+            <text x="55" y="130" text-anchor="middle" font-size="10" fill="#64748b">Original</text>
+
+            <polygon points="115,65 130,55 130,60 145,60 145,70 130,70 130,75" fill="#94a3b8"/>
+
+            <!-- Transforms -->
+            <rect x="160" y="20" width="90" height="90" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+            <text x="205" y="60" text-anchor="middle" font-size="22">&#8596;</text>
+            <text x="205" y="80" text-anchor="middle" font-size="9" fill="#1e40af">Flip</text>
+            <text x="205" y="130" text-anchor="middle" font-size="10" fill="#64748b">horizontal_flip</text>
+
+            <rect x="270" y="20" width="90" height="90" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/>
+            <text x="315" y="60" text-anchor="middle" font-size="22">&#8635;</text>
+            <text x="315" y="80" text-anchor="middle" font-size="9" fill="#065f46">Rotar</text>
+            <text x="315" y="130" text-anchor="middle" font-size="10" fill="#64748b">random_rotation</text>
+
+            <rect x="380" y="20" width="90" height="90" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="425" y="60" text-anchor="middle" font-size="22">&#9728;</text>
+            <text x="425" y="80" text-anchor="middle" font-size="9" fill="#92400e">Brillo</text>
+            <text x="425" y="130" text-anchor="middle" font-size="10" fill="#64748b">color_jitter</text>
+
+            <rect x="490" y="20" width="90" height="90" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="535" y="60" text-anchor="middle" font-size="22">&#11034;</text>
+            <text x="535" y="80" text-anchor="middle" font-size="9" fill="#5b21b6">Crop</text>
+            <text x="535" y="130" text-anchor="middle" font-size="10" fill="#64748b">random_crop</text>
+
+            <rect x="600" y="20" width="90" height="90" rx="8" fill="#fce7f3" stroke="#ec4899" stroke-width="1.5"/>
+            <text x="645" y="60" text-anchor="middle" font-size="22">&#127787;</text>
+            <text x="645" y="80" text-anchor="middle" font-size="9" fill="#9d174d">Blur</text>
+            <text x="645" y="130" text-anchor="middle" font-size="10" fill="#64748b">gaussian_blur</text>
+
+            <text x="375" y="155" text-anchor="middle" font-size="11" fill="#64748b">Las transformaciones se aplican aleatoriamente durante el entrenamiento para mejorar la generalizacion</text>
+        </svg>
+    </div>
+
+    <h2>Mixed Precision Training (AMP)</h2>
+    <p>MLForge activa automaticamente mixed precision cuando hay GPU CUDA disponible. Esto reduce el uso de memoria y acelera el entrenamiento.</p>
+
+    <div class="diagram-container">
+        <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="20" width="140" height="60" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+            <text x="80" y="45" text-anchor="middle" font-size="12" font-weight="700" fill="#991b1b">float32</text>
+            <text x="80" y="62" text-anchor="middle" font-size="10" fill="#dc2626">4 bytes/param</text>
+            <text x="80" y="100" text-anchor="middle" font-size="10" fill="#64748b">Sin AMP</text>
+
+            <polygon points="170,50 190,40 190,45 210,45 210,55 190,55 190,60" fill="#94a3b8"/>
+
+            <rect x="220" y="20" width="140" height="60" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+            <text x="290" y="45" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">float16 / bf16</text>
+            <text x="290" y="62" text-anchor="middle" font-size="10" fill="#10b981">2 bytes/param</text>
+            <text x="290" y="100" text-anchor="middle" font-size="10" fill="#64748b">Con AMP: ~2x velocidad</text>
+
+            <polygon points="380,50 400,40 400,45 420,45 420,55 400,55 400,60" fill="#94a3b8"/>
+
+            <rect x="430" y="30" width="60" height="40" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="460" y="52" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">auto</text>
+            <text x="460" y="100" text-anchor="middle" font-size="10" fill="#64748b">CUDA: fp16</text>
+            <text x="460" y="113" text-anchor="middle" font-size="10" fill="#64748b">CPU: bf16</text>
+        </svg>
+    </div>
+
+    <h2>Configuracion Completa de Training</h2>
+    <pre><span class="kw">training</span>:
+  <span class="fn">epochs</span>: <span class="num">20</span>                  <span class="comment"># Numero de epochs</span>
+  <span class="fn">batch_size</span>: <span class="num">32</span>              <span class="comment"># Tamano del batch</span>
+  <span class="fn">optimizer</span>: <span class="str">adam</span>              <span class="comment"># adam | adamw | sgd</span>
+  <span class="fn">learning_rate</span>: <span class="num">0.001</span>        <span class="comment"># Learning rate inicial</span>
+  <span class="fn">scheduler</span>: <span class="str">cosine</span>           <span class="comment"># cosine | step | plateau | none</span>
+  <span class="fn">early_stopping</span>:
+    <span class="fn">patience</span>: <span class="num">5</span>                <span class="comment"># Epochs sin mejora antes de parar</span>
+    <span class="fn">metric</span>: <span class="str">val_accuracy</span>      <span class="comment"># Metrica a monitorear</span>
+  <span class="fn">output_dir</span>: <span class="str">./outputs</span>       <span class="comment"># Donde guardar checkpoints</span>
+  <span class="fn">device</span>: <span class="str">auto</span>                <span class="comment"># auto | cuda | cpu | mps</span></pre>
+
+</div>
+
+<footer class="footer">
+    <p>MLForge Documentation &mdash; <a href="index.html" style="color:#60a5fa">Volver al inicio</a></p>
+</footer>
+
+</body>
+</html>

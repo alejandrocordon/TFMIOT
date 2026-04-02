@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - MLForge</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="logo"><div class="logo-icon">&#9881;</div> MLForge</div>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="quickstart.html">Quickstart</a>
+            <a href="arquitectura.html">Arquitectura</a>
+            <a href="cli.html">CLI</a>
+            <a href="training.html">Training</a>
+            <a href="export.html">Export &amp; Deploy</a>
+            <a href="api.html" class="active">API</a>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <h1>API Reference</h1>
+    <p>Referencia de los modulos y clases principales de MLForge para uso programatico.</p>
+
+    <div class="diagram-container">
+        <svg width="700" height="100" viewBox="0 0 700 100">
+            <rect x="10" y="15" width="120" height="55" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+            <text x="70" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="#1e40af">mlforge.config</text>
+            <text x="70" y="55" text-anchor="middle" font-size="9" fill="#3b82f6">Configuracion</text>
+
+            <rect x="145" y="15" width="120" height="55" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+            <text x="205" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="#065f46">mlforge.models</text>
+            <text x="205" y="55" text-anchor="middle" font-size="9" fill="#047857">Modelos</text>
+
+            <rect x="280" y="15" width="120" height="55" rx="8" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+            <text x="340" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="#9d174d">mlforge.training</text>
+            <text x="340" y="55" text-anchor="middle" font-size="9" fill="#be185d">Entrenamiento</text>
+
+            <rect x="415" y="15" width="120" height="55" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="475" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="#5b21b6">mlforge.export</text>
+            <text x="475" y="55" text-anchor="middle" font-size="9" fill="#7c3aed">Exportacion</text>
+
+            <rect x="550" y="15" width="120" height="55" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+            <text x="610" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="#9a3412">mlforge.deploy</text>
+            <text x="610" y="55" text-anchor="middle" font-size="9" fill="#c2410c">Despliegue</text>
+        </svg>
+    </div>
+
+    <!-- Config Module -->
+    <h2>mlforge.config</h2>
+    <p>Carga y validacion de configuraciones YAML.</p>
+
+    <h3>load_config(path) -> ProjectConfig</h3>
+    <p>Carga un archivo YAML y devuelve un objeto de configuracion tipado.</p>
+    <pre><span class="kw">from</span> mlforge.config <span class="kw">import</span> load_config
+
+config = load_config(<span class="str">"config.yaml"</span>)
+<span class="fn">print</span>(config.model.architecture)    <span class="comment"># "mobilenet_v3_small"</span>
+<span class="fn">print</span>(config.training.epochs)        <span class="comment"># 20</span>
+<span class="fn">print</span>(config.data.dataset)           <span class="comment"># "flowers102"</span></pre>
+
+    <h4>Dataclasses de configuracion</h4>
+    <table>
+        <tr><th>Clase</th><th>Campos principales</th></tr>
+        <tr><td><code>ProjectConfig</code></td><td>name, task, data, model, training, export</td></tr>
+        <tr><td><code>DataConfig</code></td><td>source, dataset, input_size, augmentation, split, data_dir</td></tr>
+        <tr><td><code>ModelConfig</code></td><td>architecture, pretrained, num_classes, framework</td></tr>
+        <tr><td><code>TrainingConfig</code></td><td>epochs, batch_size, optimizer, learning_rate, scheduler, early_stopping, output_dir, device</td></tr>
+        <tr><td><code>ExportConfig</code></td><td>formats, output_dir</td></tr>
+    </table>
+
+    <!-- Models Module -->
+    <h2>mlforge.models</h2>
+    <p>Registro y creacion de modelos por nombre.</p>
+
+    <h3>registry.py</h3>
+    <pre><span class="kw">from</span> mlforge.models.registry <span class="kw">import</span> (
+    create_pytorch_model,
+    create_tensorflow_model,
+    list_architectures,
+    list_tf_architectures,
+    register_pytorch,
+    register_tensorflow,
+)
+
+<span class="comment"># Crear modelo PyTorch</span>
+model = create_pytorch_model(<span class="str">"mobilenet_v3_small"</span>, num_classes=<span class="num">10</span>, pretrained=<span class="kw">True</span>)
+
+<span class="comment"># Crear modelo TensorFlow</span>
+model_tf = create_tensorflow_model(<span class="str">"efficientnet_b0"</span>, num_classes=<span class="num">10</span>, input_size=<span class="num">224</span>)
+
+<span class="comment"># Listar arquitecturas disponibles</span>
+<span class="fn">print</span>(list_architectures())     <span class="comment"># PyTorch models</span>
+<span class="fn">print</span>(list_tf_architectures())  <span class="comment"># TensorFlow models</span>
+
+<span class="comment"># Registrar arquitectura custom</span>
+<span class="kw">@register_pytorch</span>(<span class="str">"mi_modelo"</span>)
+<span class="kw">def</span> <span class="fn">mi_modelo</span>(num_classes, pretrained):
+    <span class="comment"># Tu modelo aqui</span>
+    <span class="kw">return</span> model</pre>
+
+    <h3>detector.py</h3>
+    <pre><span class="kw">from</span> mlforge.models.detector <span class="kw">import</span> (
+    create_yolo_model,
+    train_yolo,
+    export_yolo,
+    list_detection_models,
+)
+
+<span class="comment"># Crear modelo YOLO</span>
+model = create_yolo_model(<span class="str">"yolov8n"</span>, pretrained=<span class="kw">True</span>)
+
+<span class="comment"># Entrenar en dataset custom</span>
+output = train_yolo(
+    model_variant=<span class="str">"yolov8n"</span>,
+    data_yaml=<span class="str">"data.yaml"</span>,
+    epochs=<span class="num">50</span>,
+    image_size=<span class="num">640</span>,
+)
+
+<span class="comment"># Exportar</span>
+export_yolo(<span class="str">"best.pt"</span>, format=<span class="str">"tflite"</span>)</pre>
+
+    <!-- Training Module -->
+    <h2>mlforge.training</h2>
+    <p>Motores de entrenamiento para PyTorch y TensorFlow.</p>
+
+    <h3>trainer_pytorch.train(config) -> Path</h3>
+    <pre><span class="kw">from</span> mlforge.config <span class="kw">import</span> load_config
+<span class="kw">from</span> mlforge.training.trainer_pytorch <span class="kw">import</span> train
+
+config = load_config(<span class="str">"config.yaml"</span>)
+output_dir = train(config)
+<span class="comment"># output_dir contiene: best_model.pth, final_model.pth, metrics.json</span></pre>
+
+    <h3>trainer_tf.train(config) -> Path</h3>
+    <pre><span class="kw">from</span> mlforge.training.trainer_tf <span class="kw">import</span> train
+
+<span class="comment"># Misma interfaz, seleccion automatica por config.model.framework</span>
+output_dir = train(config)
+<span class="comment"># output_dir contiene: best_model.keras, final_model.keras, metrics.json</span></pre>
+
+    <h3>callbacks.py</h3>
+    <pre><span class="kw">from</span> mlforge.training.callbacks <span class="kw">import</span> EarlyStopping, ModelCheckpoint, Callback
+
+<span class="comment"># EarlyStopping: para training si no mejora en N epochs</span>
+es = EarlyStopping(patience=<span class="num">5</span>, metric=<span class="str">"val_accuracy"</span>, higher_is_better=<span class="kw">True</span>)
+
+<span class="comment"># ModelCheckpoint: guarda el mejor modelo automaticamente</span>
+ckpt = ModelCheckpoint(output_dir=<span class="str">"./outputs"</span>, metric=<span class="str">"val_accuracy"</span>)
+
+<span class="comment"># Custom callback: heredar de Callback</span>
+<span class="kw">class</span> <span class="fn">MiCallback</span>(Callback):
+    <span class="kw">def</span> <span class="fn">on_epoch_end</span>(self, model, metrics):
+        <span class="fn">print</span>(f<span class="str">"Epoch {metrics.epoch}: {metrics.val_accuracy:.2%}"</span>)
+        <span class="kw">return</span> <span class="kw">True</span>  <span class="comment"># False para parar</span></pre>
+
+    <h3>metrics.py</h3>
+    <pre><span class="kw">from</span> mlforge.training.metrics <span class="kw">import</span> EpochMetrics, MetricsTracker
+
+<span class="comment"># EpochMetrics: datos de una epoch</span>
+metrics = EpochMetrics(
+    epoch=<span class="num">1</span>, train_loss=<span class="num">0.5</span>, train_accuracy=<span class="num">0.8</span>,
+    val_loss=<span class="num">0.3</span>, val_accuracy=<span class="num">0.85</span>,
+    learning_rate=<span class="num">0.001</span>, duration_seconds=<span class="num">12.3</span>,
+)
+
+<span class="comment"># MetricsTracker: persiste a JSON</span>
+tracker = MetricsTracker(<span class="str">"./outputs"</span>)
+tracker.log_epoch(metrics)
+<span class="fn">print</span>(tracker.best_metric(<span class="str">"val_accuracy"</span>))  <span class="comment"># 0.85</span></pre>
+
+    <!-- Export Module -->
+    <h2>mlforge.export</h2>
+    <p>Exportacion a multiples formatos con validacion y benchmark.</p>
+
+    <pre><span class="kw">from</span> mlforge.export.onnx_export <span class="kw">import</span> ONNXExporter
+<span class="kw">from</span> mlforge.export.tflite_export <span class="kw">import</span> TFLiteExporter, EdgeTPUExporter
+<span class="kw">from</span> mlforge.export.coreml_export <span class="kw">import</span> CoreMLExporter
+<span class="kw">from</span> mlforge.export.tfjs_export <span class="kw">import</span> TFJSExporter
+<span class="kw">from</span> mlforge.export.benchmark <span class="kw">import</span> run_benchmark
+<span class="kw">from</span> mlforge.export.quantize <span class="kw">import</span> quantize_dynamic
+
+<span class="comment"># Exportar a ONNX</span>
+exporter = ONNXExporter(model, input_size=<span class="num">224</span>)
+onnx_path = exporter.export(<span class="str">"./exported"</span>)
+exporter.validate(onnx_path)  <span class="comment"># Compara outputs PyTorch vs ONNX</span>
+
+<span class="comment"># Benchmark comparativo</span>
+run_benchmark(<span class="str">"./exported"</span>, input_size=<span class="num">224</span>, n_runs=<span class="num">100</span>)</pre>
+
+    <!-- Deploy Module -->
+    <h2>mlforge.deploy</h2>
+    <p>Scaffolding de proyectos de despliegue y servidor de inferencia.</p>
+
+    <h3>scaffold.py</h3>
+    <pre><span class="kw">from</span> mlforge.deploy.scaffold <span class="kw">import</span> scaffold, list_targets
+
+<span class="comment"># Ver targets disponibles</span>
+<span class="kw">for</span> t <span class="kw">in</span> list_targets():
+    <span class="fn">print</span>(f<span class="str">"{t['name']}: {t['description']}"</span>)
+
+<span class="comment"># Generar proyecto Android</span>
+project = scaffold(
+    target=<span class="str">"android"</span>,
+    output_dir=<span class="str">"./deploy"</span>,
+    model_path=<span class="str">"model.tflite"</span>,
+    labels=[<span class="str">"rosa"</span>, <span class="str">"tulipan"</span>, <span class="str">"girasol"</span>],
+    input_size=<span class="num">224</span>,
+)</pre>
+
+    <h3>server.py</h3>
+    <pre><span class="kw">from</span> mlforge.deploy.server <span class="kw">import</span> create_app, ONNXPredictor
+
+<span class="comment"># Crear predictor standalone</span>
+predictor = ONNXPredictor(
+    <span class="str">"model.onnx"</span>,
+    labels=[<span class="str">"rosa"</span>, <span class="str">"tulipan"</span>],
+    input_size=<span class="num">224</span>,
+)
+
+<span class="comment"># Predecir</span>
+<span class="kw">from</span> PIL <span class="kw">import</span> Image
+img = Image.open(<span class="str">"flower.jpg"</span>)
+results = predictor.predict(img, top_k=<span class="num">5</span>)
+<span class="comment"># [{"label": "rosa", "confidence": 0.92, "class_id": 0}, ...]</span>
+
+<span class="comment"># Crear FastAPI app</span>
+app = create_app(model_path=<span class="str">"model.onnx"</span>, labels=[<span class="str">"rosa"</span>, <span class="str">"tulipan"</span>])
+<span class="comment"># Servir con uvicorn</span></pre>
+
+    <!-- Project Templates -->
+    <h2>mlforge.project_templates</h2>
+    <pre><span class="kw">from</span> mlforge.project_templates <span class="kw">import</span> create_project
+
+<span class="comment"># Crear proyecto de clasificacion con TensorFlow</span>
+project_dir = create_project(
+    name=<span class="str">"mi_proyecto"</span>,
+    output_dir=<span class="str">"."</span>,
+    task=<span class="str">"classification"</span>,     <span class="comment"># o "detection"</span>
+    framework=<span class="str">"tensorflow"</span>,    <span class="comment"># o "pytorch"</span>
+)
+<span class="comment"># Crea: config.yaml, train.py, README.md, data/, outputs/</span></pre>
+
+    <!-- Data Module -->
+    <h2>mlforge.data</h2>
+
+    <h3>HuggingFace Integration</h3>
+    <pre><span class="kw">from</span> mlforge.data.huggingface <span class="kw">import</span> load_huggingface_dataset
+
+<span class="comment"># Cargar cualquier dataset de imagen del Hub</span>
+train_ds, val_ds, test_ds = load_huggingface_dataset(
+    <span class="str">"beans"</span>,                   <span class="comment"># o "food101", "username/dataset"</span>
+    train_transform=my_transform,
+    val_transform=my_val_transform,
+)
+
+<span class="comment"># Los datasets son compatibles con PyTorch DataLoader</span>
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+loader = DataLoader(train_ds, batch_size=<span class="num">32</span>, shuffle=<span class="kw">True</span>)</pre>
+
+</div>
+
+<footer class="footer">
+    <p>MLForge Documentation &mdash; <a href="index.html" style="color:#60a5fa">Volver al inicio</a></p>
+</footer>
+
+</body>
+</html>

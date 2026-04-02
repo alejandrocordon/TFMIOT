@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quickstart - MLForge</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="logo"><div class="logo-icon">&#9881;</div> MLForge</div>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="quickstart.html" class="active">Quickstart</a>
+            <a href="arquitectura.html">Arquitectura</a>
+            <a href="cli.html">CLI</a>
+            <a href="training.html">Training</a>
+            <a href="export.html">Export &amp; Deploy</a>
+            <a href="api.html">API</a>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <h1>Quickstart: Tu Primer Modelo en 5 Minutos</h1>
+    <p>Esta guia te lleva desde la instalacion hasta tener un modelo entrenado y listo para desplegar.</p>
+
+    <!-- Flow diagram -->
+    <div class="diagram-container">
+        <svg width="750" height="80" viewBox="0 0 750 80">
+            <rect x="0" y="15" width="110" height="50" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+            <text x="55" y="45" text-anchor="middle" font-size="12" font-weight="600" fill="#065f46">Instalar</text>
+
+            <polygon points="125,40 145,28 145,34 160,34 160,46 145,46 145,52" fill="#94a3b8"/>
+
+            <rect x="170" y="15" width="110" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+            <text x="225" y="45" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Crear Proyecto</text>
+
+            <polygon points="295,40 315,28 315,34 330,34 330,46 315,46 315,52" fill="#94a3b8"/>
+
+            <rect x="340" y="15" width="110" height="50" rx="8" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+            <text x="395" y="45" text-anchor="middle" font-size="12" font-weight="600" fill="#9d174d">Entrenar</text>
+
+            <polygon points="465,40 485,28 485,34 500,34 500,46 485,46 485,52" fill="#94a3b8"/>
+
+            <rect x="510" y="15" width="110" height="50" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="565" y="45" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">Exportar</text>
+
+            <polygon points="635,40 655,28 655,34 670,34 670,46 655,46 655,52" fill="#94a3b8"/>
+
+            <rect x="680" y="15" width="70" height="50" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+            <text x="715" y="45" text-anchor="middle" font-size="12" font-weight="600" fill="#9a3412">Deploy</text>
+        </svg>
+    </div>
+
+    <h2>1. Instalacion</h2>
+    <pre><span class="comment"># Clonar el repositorio</span>
+<span class="cmd">git</span> clone https://github.com/alejandrocordon/tfmiot.git
+<span class="cmd">cd</span> tfmiot/mlforge
+
+<span class="comment"># Instalar con todas las dependencias</span>
+<span class="cmd">pip</span> install <span class="flag">-e</span> <span class="str">".[all]"</span>
+
+<span class="comment"># Verificar instalacion</span>
+<span class="cmd">mlforge</span> info</pre>
+
+    <div class="alert alert-info">
+        <strong>Dependencias opcionales:</strong> Instala solo lo que necesites con <code>pip install -e ".[tensorflow]"</code>, <code>".[export]"</code>, o <code>".[dashboard]"</code>.
+    </div>
+
+    <h2>2. Crear un Proyecto</h2>
+    <pre><span class="comment"># Crear proyecto de clasificacion de imagenes</span>
+<span class="cmd">mlforge</span> <span class="fn">new</span> mi_clasificador <span class="flag">--task</span> classification
+
+<span class="comment"># Se genera esta estructura:</span>
+mi_clasificador/
+  ├── config.yaml          <span class="comment"># Configuracion completa del pipeline</span>
+  ├── train.py             <span class="comment"># Script de entrenamiento standalone</span>
+  ├── README.md
+  ├── data/                <span class="comment"># Datos (se descargan automaticamente)</span>
+  ├── outputs/             <span class="comment"># Checkpoints y metricas</span>
+  └── exported_models/     <span class="comment"># Modelos exportados</span></pre>
+
+    <h2>3. Configurar (config.yaml)</h2>
+    <p>El archivo <code>config.yaml</code> controla todo el pipeline:</p>
+    <pre><span class="kw">project</span>:
+  <span class="fn">name</span>: <span class="str">flower_classifier</span>
+  <span class="fn">task</span>: <span class="str">classification</span>
+
+<span class="kw">data</span>:
+  <span class="fn">source</span>: <span class="str">torchvision</span>          <span class="comment"># torchvision | huggingface | local</span>
+  <span class="fn">dataset</span>: <span class="str">flowers102</span>         <span class="comment"># Dataset a usar</span>
+  <span class="fn">input_size</span>: <span class="num">224</span>
+  <span class="fn">augmentation</span>:
+    - <span class="str">horizontal_flip</span>
+    - <span class="str">random_rotation</span>: <span class="num">15</span>
+    - <span class="str">color_jitter</span>: {<span class="fn">brightness</span>: <span class="num">0.2</span>}
+
+<span class="kw">model</span>:
+  <span class="fn">architecture</span>: <span class="str">mobilenet_v3_small</span>  <span class="comment"># Ver todas con: mlforge info</span>
+  <span class="fn">pretrained</span>: <span class="kw">true</span>              <span class="comment"># Transfer learning</span>
+  <span class="fn">num_classes</span>: <span class="num">102</span>
+  <span class="fn">framework</span>: <span class="str">pytorch</span>            <span class="comment"># pytorch | tensorflow</span>
+
+<span class="kw">training</span>:
+  <span class="fn">epochs</span>: <span class="num">20</span>
+  <span class="fn">batch_size</span>: <span class="num">32</span>
+  <span class="fn">optimizer</span>: <span class="str">adam</span>               <span class="comment"># adam | adamw | sgd</span>
+  <span class="fn">learning_rate</span>: <span class="num">0.001</span>
+  <span class="fn">scheduler</span>: <span class="str">cosine</span>             <span class="comment"># cosine | step | plateau</span>
+  <span class="fn">early_stopping</span>:
+    <span class="fn">patience</span>: <span class="num">5</span>
+
+<span class="kw">export</span>:
+  <span class="fn">formats</span>:
+    - <span class="str">onnx</span>: {}
+    - <span class="str">tflite</span>: {<span class="fn">quantize</span>: <span class="str">int8</span>}
+    - <span class="str">coreml</span>: {}</pre>
+
+    <h2>4. Entrenar</h2>
+    <pre><span class="cmd">mlforge</span> <span class="fn">train</span> <span class="flag">--config</span> config.yaml</pre>
+
+    <div class="diagram-container">
+        <svg width="700" height="220" viewBox="0 0 700 220">
+            <!-- Terminal simulation -->
+            <rect x="0" y="0" width="700" height="220" rx="10" fill="#1e293b"/>
+            <circle cx="20" cy="15" r="6" fill="#ef4444"/>
+            <circle cx="40" cy="15" r="6" fill="#f59e0b"/>
+            <circle cx="60" cy="15" r="6" fill="#22c55e"/>
+
+            <text x="20" y="50" font-family="monospace" font-size="13" fill="#10b981" font-weight="700">MLForge</text>
+            <text x="90" y="50" font-family="monospace" font-size="13" fill="#94a3b8">- Training from config.yaml</text>
+
+            <text x="20" y="75" font-family="monospace" font-size="12" fill="#22d3ee">Device:</text>
+            <text x="90" y="75" font-family="monospace" font-size="12" fill="#e2e8f0">cuda (NVIDIA RTX 3060)</text>
+
+            <text x="20" y="95" font-family="monospace" font-size="12" fill="#22d3ee">Model:</text>
+            <text x="90" y="95" font-family="monospace" font-size="12" fill="#e2e8f0">mobilenet_v3_small (pretrained=True, classes=102)</text>
+
+            <text x="20" y="115" font-family="monospace" font-size="12" fill="#22d3ee">Mixed precision:</text>
+            <text x="155" y="115" font-family="monospace" font-size="12" fill="#e2e8f0">enabled (cuda)</text>
+
+            <text x="20" y="145" font-family="monospace" font-size="12" fill="#a78bfa">Epoch  1/20</text>
+            <text x="120" y="145" font-family="monospace" font-size="12" fill="#94a3b8">[12.3s]</text>
+            <text x="20" y="162" font-family="monospace" font-size="12" fill="#e2e8f0">  Train  loss=2.1432  acc=38.21%</text>
+            <text x="20" y="179" font-family="monospace" font-size="12" fill="#e2e8f0">  Val    loss=1.5210  acc=52.45%</text>
+
+            <text x="20" y="205" font-family="monospace" font-size="12" fill="#a78bfa">Epoch  2/20</text>
+            <text x="120" y="205" font-family="monospace" font-size="12" fill="#94a3b8">[11.8s]  ...</text>
+        </svg>
+        <div class="diagram-caption">Salida del entrenamiento con metricas en tiempo real</div>
+    </div>
+
+    <h2>5. Exportar</h2>
+    <pre><span class="comment"># Exportar a todos los formatos</span>
+<span class="cmd">mlforge</span> <span class="fn">export</span> <span class="flag">--config</span> config.yaml <span class="flag">--formats</span> all
+
+<span class="comment"># Benchmark comparativo</span>
+<span class="cmd">mlforge</span> <span class="fn">benchmark</span> <span class="flag">--model-dir</span> exported_models/ <span class="flag">--config</span> config.yaml</pre>
+
+    <div class="diagram-container">
+        <svg width="600" height="200" viewBox="0 0 600 200">
+            <!-- Central model -->
+            <rect x="230" y="10" width="140" height="45" rx="8" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+            <text x="300" y="38" text-anchor="middle" font-size="13" font-weight="700" fill="white">best_model.pth</text>
+
+            <!-- Export arrows and boxes -->
+            <!-- ONNX -->
+            <line x1="230" y1="55" x2="60" y2="100" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4"/>
+            <rect x="10" y="100" width="100" height="35" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="60" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">ONNX</text>
+            <text x="60" y="150" text-anchor="middle" font-size="10" fill="#64748b">~10 MB</text>
+            <text x="60" y="163" text-anchor="middle" font-size="10" fill="#64748b">Web, Server</text>
+
+            <!-- TFLite -->
+            <line x1="260" y1="55" x2="180" y2="100" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4"/>
+            <rect x="130" y="100" width="100" height="35" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="180" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">TFLite INT8</text>
+            <text x="180" y="150" text-anchor="middle" font-size="10" fill="#64748b">~2.5 MB</text>
+            <text x="180" y="163" text-anchor="middle" font-size="10" fill="#64748b">Android, RPi</text>
+
+            <!-- CoreML -->
+            <line x1="340" y1="55" x2="420" y2="100" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4"/>
+            <rect x="370" y="100" width="100" height="35" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="420" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">CoreML</text>
+            <text x="420" y="150" text-anchor="middle" font-size="10" fill="#64748b">~10 MB</text>
+            <text x="420" y="163" text-anchor="middle" font-size="10" fill="#64748b">iOS, Mac</text>
+
+            <!-- Edge TPU -->
+            <line x1="370" y1="55" x2="540" y2="100" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4"/>
+            <rect x="490" y="100" width="100" height="35" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="540" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">Edge TPU</text>
+            <text x="540" y="150" text-anchor="middle" font-size="10" fill="#64748b">~2.5 MB</text>
+            <text x="540" y="163" text-anchor="middle" font-size="10" fill="#64748b">Coral, ~3ms</text>
+
+            <!-- TF.js -->
+            <line x1="300" y1="55" x2="300" y2="100" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4"/>
+            <rect x="250" y="100" width="100" height="35" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+            <text x="300" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#5b21b6">TF.js</text>
+            <text x="300" y="150" text-anchor="middle" font-size="10" fill="#64748b">~10 MB</text>
+            <text x="300" y="163" text-anchor="middle" font-size="10" fill="#64748b">Browser</text>
+        </svg>
+        <div class="diagram-caption">Un modelo PyTorch se exporta a 5 formatos de despliegue optimizados</div>
+    </div>
+
+    <h2>6. Desplegar</h2>
+    <pre><span class="comment"># Generar app Android</span>
+<span class="cmd">mlforge</span> <span class="fn">deploy</span> android <span class="flag">--model</span> model.tflite <span class="flag">--labels</span> <span class="str">"rosa,tulipan,girasol"</span>
+
+<span class="comment"># Generar app Web</span>
+<span class="cmd">mlforge</span> <span class="fn">deploy</span> web <span class="flag">--model</span> model.onnx <span class="flag">--labels</span> <span class="str">"rosa,tulipan,girasol"</span>
+
+<span class="comment"># O lanzar un servidor de inferencia</span>
+<span class="cmd">mlforge</span> <span class="fn">serve</span> <span class="flag">--model</span> model.onnx <span class="flag">--port</span> <span class="num">8080</span></pre>
+
+    <div class="alert alert-success">
+        <strong>Listo!</strong> Tienes un modelo entrenado, exportado y desplegado. Consulta las secciones detalladas para personalizar cada paso.
+    </div>
+
+</div>
+
+<footer class="footer">
+    <p>MLForge Documentation &mdash; <a href="index.html" style="color:#60a5fa">Volver al inicio</a></p>
+</footer>
+
+</body>
+</html>
