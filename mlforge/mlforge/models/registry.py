@@ -12,6 +12,20 @@ import torch.nn as nn
 
 _PYTORCH_REGISTRY: dict[str, Callable[..., nn.Module]] = {}
 _TF_REGISTRY: dict[str, Callable[..., Any]] = {}
+_models_loaded = False
+
+
+def _ensure_models_loaded():
+    """Import model modules to trigger @register_pytorch/@register_tensorflow decorators."""
+    global _models_loaded
+    if _models_loaded:
+        return
+    _models_loaded = True
+    import mlforge.models.classifier  # noqa: F401
+    try:
+        import mlforge.models.classifier_tf  # noqa: F401
+    except ImportError:
+        pass
 
 
 def register_pytorch(name: str):
@@ -41,6 +55,7 @@ def create_pytorch_model(architecture: str, num_classes: int, pretrained: bool =
     Returns:
         PyTorch model ready for training.
     """
+    _ensure_models_loaded()
     if architecture in _PYTORCH_REGISTRY:
         return _PYTORCH_REGISTRY[architecture](num_classes=num_classes, pretrained=pretrained)
 
@@ -62,6 +77,7 @@ def create_tensorflow_model(architecture: str, num_classes: int, pretrained: boo
     Returns:
         Keras model ready for training.
     """
+    _ensure_models_loaded()
     if architecture in _TF_REGISTRY:
         return _TF_REGISTRY[architecture](
             num_classes=num_classes, pretrained=pretrained, input_size=input_size
@@ -75,9 +91,11 @@ def create_tensorflow_model(architecture: str, num_classes: int, pretrained: boo
 
 def list_architectures() -> list[str]:
     """List all registered PyTorch architecture names."""
+    _ensure_models_loaded()
     return sorted(_PYTORCH_REGISTRY.keys())
 
 
 def list_tf_architectures() -> list[str]:
     """List all registered TensorFlow architecture names."""
+    _ensure_models_loaded()
     return sorted(_TF_REGISTRY.keys())

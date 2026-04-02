@@ -33,8 +33,10 @@ FROM python:3.11-slim AS serve
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
+    libgl1-mesa-dri \
     libglib2.0-0 \
+    libglx-mesa0 \
+    libegl1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . /app/mlforge/
@@ -71,3 +73,39 @@ RUN pip install --no-cache-dir \
     opencv-python-headless
 
 CMD ["bash"]
+
+# ============================================
+# Stage 4: Build frontend assets
+# ============================================
+FROM node:20-slim AS frontend-build
+
+WORKDIR /app/frontend
+
+COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json* ./
+RUN npm install
+
+COPY dashboard/frontend/ ./
+RUN npm run build
+
+# ============================================
+# Stage 5: Dashboard (training env + frontend + dashboard deps)
+# ============================================
+FROM training AS dashboard
+
+# Copy built frontend into the expected location
+COPY --from=frontend-build /app/frontend/dist /app/mlforge/dashboard/frontend/dist
+
+# Install dashboard dependencies (including PostgreSQL driver)
+RUN pip install --no-cache-dir \
+    fastapi>=0.110 \
+    uvicorn>=0.29 \
+    sqlmodel>=0.0.16 \
+    websockets>=12.0 \
+    python-multipart \
+    psycopg2-binary>=2.9
+
+WORKDIR /workspace
+
+EXPOSE 8000
+
+CMD ["mlforge", "dashboard", "--host", "0.0.0.0", "--port", "8000"]

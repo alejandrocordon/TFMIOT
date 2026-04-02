@@ -1,0 +1,17 @@
+__pycache__
+*.pyc
+*.egg-info
+.git
+.github
+.venv
+venv
+node_modules
+dashboard/frontend/node_modules
+dashboard/frontend/dist
+*.db
+data/
+outputs/
+exported_models/
+configs/
+.pytest_cache
+.ruff_cache

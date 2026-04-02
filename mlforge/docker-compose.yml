@@ -1,7 +1,23 @@
-version: "3.8"
-
 services:
-  # Full training environment
+  # PostgreSQL database
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mlforge
+      POSTGRES_PASSWORD: mlforge
+      POSTGRES_DB: mlforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mlforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Full training environment (CLI only)
   training:
     build:
       context: .
@@ -10,14 +26,9 @@ services:
       - ./data:/workspace/data
       - ./outputs:/workspace/outputs
       - ./exported_models:/workspace/exported_models
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
     command: mlforge train --config /workspace/config.yaml
+    profiles:
+      - cli
 
   # Inference server
   serve:
@@ -34,14 +45,28 @@ services:
       --host 0.0.0.0
       --port 8080
       --labels "clase1,clase2,clase3"
+    profiles:
+      - cli
 
-  # Dashboard
+  # Dashboard with web UI for training
   dashboard:
     build:
       context: .
-      target: training
+      target: dashboard
+    shm_size: '2gb'
     ports:
       - "8000:8000"
     volumes:
+      - ./data:/workspace/data
       - ./outputs:/workspace/outputs
+      - ./exported_models:/workspace/exported_models
+      - ./configs:/workspace/configs
+    environment:
+      - DATABASE_URL=postgresql://mlforge:mlforge@postgres:5432/mlforge
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: mlforge dashboard --host 0.0.0.0 --port 8000
+
+volumes:
+  pgdata:

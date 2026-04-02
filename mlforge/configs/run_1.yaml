@@ -1,0 +1,40 @@
+project:
+  name: run_1
+  task: classification
+data:
+  source: torchvision
+  dataset: cifar10
+  input_size: 224
+  augmentation:
+  - horizontal_flip
+  - random_rotation: 15
+  - color_jitter:
+      brightness: 0.2
+      contrast: 0.2
+  split:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+  data_dir: ./data
+model:
+  architecture: mobilenet_v3_small
+  pretrained: true
+  num_classes: 10
+  framework: pytorch
+training:
+  epochs: 10
+  batch_size: 32
+  optimizer: adam
+  learning_rate: 0.001
+  scheduler: cosine
+  early_stopping:
+    patience: 5
+    metric: val_accuracy
+  output_dir: ./outputs/run_1
+  device: auto
+export:
+  formats:
+  - onnx: {}
+  - tflite:
+      quantize: dynamic
+  output_dir: ./exported_models/run_1

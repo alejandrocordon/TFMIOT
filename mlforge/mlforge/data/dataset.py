@@ -82,6 +82,7 @@ def create_dataloaders(
     config: DataConfig,
     train_transform=None,
     val_transform=None,
+    batch_size: int = 32,
 ) -> tuple[DataLoader, DataLoader, DataLoader]:
     """Create train, validation, and test DataLoaders from config.
 
@@ -89,6 +90,7 @@ def create_dataloaders(
         config: Data configuration.
         train_transform: Transform for training data (with augmentation).
         val_transform: Transform for validation/test data (no augmentation).
+        batch_size: Batch size for all loaders.
 
     Returns:
         Tuple of (train_loader, val_loader, test_loader).
@@ -149,14 +151,23 @@ def create_dataloaders(
         f"Val: {len(val_dataset)}, Test: {len(test_dataset)}"
     )
 
+    # Use num_workers=0 on CPU to avoid shared memory issues in Docker
+    import torch
+    use_cuda = torch.cuda.is_available()
+    num_workers = 4 if use_cuda else 0
+    pin_memory = use_cuda
+
     train_loader = DataLoader(
-        train_dataset, batch_size=32, shuffle=True, num_workers=4, pin_memory=True
+        train_dataset, batch_size=batch_size, shuffle=True,
+        num_workers=num_workers, pin_memory=pin_memory,
     )
     val_loader = DataLoader(
-        val_dataset, batch_size=32, shuffle=False, num_workers=4, pin_memory=True
+        val_dataset, batch_size=batch_size, shuffle=False,
+        num_workers=num_workers, pin_memory=pin_memory,
     )
     test_loader = DataLoader(
-        test_dataset, batch_size=32, shuffle=False, num_workers=4, pin_memory=True
+        test_dataset, batch_size=batch_size, shuffle=False,
+        num_workers=num_workers, pin_memory=pin_memory,
     )
 
     return train_loader, val_loader, test_loader

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import subprocess
 import sys
 import threading
@@ -12,6 +13,8 @@ from sqlmodel import Session
 
 from dashboard.backend.models.db import ExportedModel, engine
 
+logger = logging.getLogger("mlforge.export_service")
+
 
 def start_export(
     training_run_id: int,
@@ -21,6 +24,10 @@ def start_export(
     checkpoint_path: str | None = None,
 ) -> None:
     """Start model export in a background thread."""
+    logger.info(
+        "Starting export: run=%d, project=%d, formats=%s, config=%s",
+        training_run_id, project_id, formats, config_path,
+    )
     thread = threading.Thread(
         target=_run_export,
         args=(training_run_id, project_id, config_path, formats, checkpoint_path),
@@ -45,6 +52,8 @@ def _run_export(
     if checkpoint_path:
         cmd.extend(["--checkpoint", checkpoint_path])
 
+    logger.info("Export command: %s", " ".join(cmd))
+
     try:
         result = subprocess.run(
             cmd,
@@ -53,20 +62,42 @@ def _run_export(
             timeout=600,
         )
 
-        # Record exported models
-        # For each format, find the exported file and record it
+        logger.info("Export finished with code %d", result.returncode)
+        if result.stdout:
+            logger.info("Export stdout:\n%s", result.stdout[-2000:])
+        if result.returncode != 0 and result.stderr:
+            logger.error("Export stderr:\n%s", result.stderr[-2000:])
+
+        # Record exported models for each format
         for fmt in formats.split(","):
             fmt = fmt.strip()
+
+            # Try to find the actual exported file and its size
+            export_dir = Path(f"exported_models/run_{training_run_id}/{fmt}")
+            file_path = f"exported_models/run_{training_run_id}/{fmt}/"
+            file_size = 0.0
+
+            if export_dir.exists():
+                files = list(export_dir.glob("*"))
+                if files:
+                    file_path = str(files[0])
+                    file_size = files[0].stat().st_size / (1024 * 1024)
+                    logger.info("Found export: %s (%.1f MB)", file_path, file_size)
+
             with Session(engine) as session:
                 exported = ExportedModel(
                     training_run_id=training_run_id,
                     project_id=project_id,
                     format=fmt,
-                    file_path=f"exported_models/{fmt}/",
+                    file_path=file_path,
+                    file_size_mb=round(file_size, 2),
                     created_at=datetime.utcnow(),
                 )
                 session.add(exported)
                 session.commit()
+                logger.info("Recorded export: format=%s, run=%d", fmt, training_run_id)
 
+    except subprocess.TimeoutExpired:
+        logger.error("Export timed out after 600s")
     except Exception as e:
-        pass  # Logged in subprocess output
+        logger.exception("Export failed: %s", e)

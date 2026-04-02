@@ -196,7 +196,8 @@ def train(config: ProjectConfig) -> Path:
     train_transform = build_train_transform(config.data.input_size, config.data.augmentation)
     val_transform = build_val_transform(config.data.input_size)
     train_loader, val_loader, test_loader = create_dataloaders(
-        config.data, train_transform=train_transform, val_transform=val_transform
+        config.data, train_transform=train_transform, val_transform=val_transform,
+        batch_size=config.training.batch_size,
     )
 
     # Model
