@@ -1,0 +1,41 @@
+project:
+  name: flower_classifier_tf
+  task: classification
+
+data:
+  source: torchvision       # Uses TFDS internally when framework=tensorflow
+  dataset: flowers102
+  input_size: 224
+  augmentation:
+    - horizontal_flip
+    - random_rotation: 15
+    - color_jitter: {brightness: 0.2, contrast: 0.2}
+  split:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+  data_dir: ./data
+
+model:
+  architecture: mobilenet_v3_small
+  pretrained: true
+  num_classes: 102
+  framework: tensorflow      # <-- TensorFlow/Keras backend
+
+training:
+  epochs: 20
+  batch_size: 32
+  optimizer: adam
+  learning_rate: 0.001
+  scheduler: cosine
+  early_stopping:
+    patience: 5
+    metric: val_accuracy
+  output_dir: ./outputs_tf
+  device: auto
+
+export:
+  formats:
+    - tflite: {quantize: int8}
+    - tfjs: {}
+  output_dir: ./exported_models_tf

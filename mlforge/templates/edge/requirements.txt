@@ -1,0 +1,12 @@
+# MLForge Edge Template - Requirements
+numpy>=1.24
+Pillow>=10.0
+opencv-python-headless>=4.8
+
+# For Edge TPU (Coral USB):
+# pycoral>=2.0
+
+# For CPU-only TFLite:
+# tflite-runtime>=2.14
+# OR
+# tensorflow>=2.16

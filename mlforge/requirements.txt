@@ -1,0 +1,28 @@
+# Core ML
+torch>=2.2
+torchvision>=0.17
+onnx>=1.15
+onnxruntime>=1.17
+
+# CLI & Config
+typer>=0.12
+pyyaml>=6.0
+rich>=13.0
+
+# Data
+albumentations>=1.4
+Pillow>=10.0
+tqdm>=4.66
+
+# Optional: TensorFlow
+# tensorflow>=2.16
+
+# Optional: Export
+# coremltools>=7.0
+# tf2onnx>=1.16
+
+# Optional: Dashboard
+# fastapi>=0.110
+# uvicorn>=0.29
+# sqlmodel>=0.0.16
+# websockets>=12.0
